@@ -8,6 +8,57 @@ servers:
 tags:
   - name: bookings
     description: Operations related to managing reservations
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          description: HTTP status code
+        message:
+          type: string
+          description: Error message
+    InitializeTablesDTO:
+      type: object
+      properties:
+        numberOfTables:
+          type: number
+    ReserveTableDTO:
+      type: object
+      properties:
+        numberOfCustomers:
+          type: number
+    CancelReservationDTO:
+      type: object
+      properties:
+        bookingId:
+          type: number
+
+  responses:
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Resource Not Found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Conflict:
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NoContent:
+      description: No Content
+      content:
+        application/json:
+          schema: {}  # Empty schema for 204 No Content
 paths:
   /initializeTables:
     post:
@@ -32,19 +83,12 @@ paths:
       responses:
         '200':
           description: Success
-          content:
-            application/json:
-              schema:
-                type: string
-              examples:
-                message:
-                  value: Tables initialized successfully
         '409':
           description: Tables already initialized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InitializeTablesError'
+                $ref: '#/components/responses/Conflict'
   /reserveTable:
     post:
       tags:
@@ -68,14 +112,14 @@ paths:
               $ref: '#/components/schemas/ReserveTableDTO'
         required: true
       responses:
-        '204':
+        '200':
           description: Success
         '400':
           description: Not enough tables for all customers
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ReserveTableError'
+                $ref: '#/components/responses/BadRequest'
   /cancelReservation:
     post:
       tags:
@@ -98,43 +142,11 @@ paths:
               $ref: '#/components/schemas/CancelReservationDTO'
         required: true
       responses:
-        '204':
+        '200':
           description: Success
         '404':
           description: Booking ID not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CancelReservationError'
-components:
-  schemas:
-    InitializeTablesDTO:
-      type: object
-      properties:
-        numberOfTables:
-          type: number
-    InitializeTablesError:
-      type: object
-      properties:
-        message:
-          type: string
-    ReserveTableDTO:
-      type: object
-      properties:
-        numberOfCustomers:
-          type: number
-    ReserveTableError:
-      type: object
-      properties:
-        message:
-          type: string
-    CancelReservationDTO:
-      type: object
-      properties:
-        bookingId:
-          type: number
-    CancelReservationError:
-      type: object
-      properties:
-        message:
-          type: string
+                $ref: '#/components/responses/NotFound'
