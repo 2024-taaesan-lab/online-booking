@@ -48,8 +48,8 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
-    Conflict:
-      description: Conflict
+    TablesAlreadyInitializedException:
+      description: TablesAlreadyInitializedException
       content:
         application/json:
           schema:
@@ -88,7 +88,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/Conflict'
+                $ref: '#/components/responses/TablesAlreadyInitializedException'
   /reserveTable:
     post:
       tags:

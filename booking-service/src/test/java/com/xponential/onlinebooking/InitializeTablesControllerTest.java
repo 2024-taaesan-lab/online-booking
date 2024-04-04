@@ -1,7 +1,7 @@
 package com.xponential.onlinebooking;
 
 import com.xponential.onlinebooking.controller.InitializeTablesController;
-import com.xponential.onlinebooking.model.Conflict;
+import com.xponential.onlinebooking.model.TablesAlreadyInitializedException;
 import com.xponential.onlinebooking.model.InitializeTablesDTO;
 import com.xponential.onlinebooking.service.BookingService;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -52,6 +51,6 @@ class InitializeTablesControllerTest {
         initializeTablesController.initializeTables(dto); // Initialize once
 
         // Second initialization attempt should throw Conflict exception
-        assertThrows(Conflict.class, () -> initializeTablesController.initializeTables(dto));
+        assertThrows(TablesAlreadyInitializedException.class, () -> initializeTablesController.initializeTables(dto));
     }
 }
