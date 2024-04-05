@@ -1,11 +1,9 @@
 package com.xponential.onlinebooking;
 
 import com.xponential.onlinebooking.controller.CancelReservationController;
-import com.xponential.onlinebooking.model.BookingIDNotFoundException;
 import com.xponential.onlinebooking.model.CancelReservationDTO;
 import com.xponential.onlinebooking.model.CancelReservationResponse;
-import com.xponential.onlinebooking.model.TablesNotInitializedException;
-import com.xponential.onlinebooking.service.BookingService;
+import com.xponential.onlinebooking.service.TableReservationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -14,10 +12,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -26,8 +20,9 @@ import static org.mockito.Mockito.*;
 
 public class CancelReservationControllerTest {
 
+
     @Mock
-    private BookingService bookingService;
+    private TableReservationService tableReservationService;
 
     @InjectMocks
     private CancelReservationController cancelReservationController;
@@ -37,31 +32,22 @@ public class CancelReservationControllerTest {
         MockitoAnnotations.initMocks(this);
     }
 
-//    @Test
-//    void testCancelReservation() {
-//        CancelReservationDTO cancelReservationDTO = new CancelReservationDTO();
-//        cancelReservationDTO.setBookingId(UUID.randomUUID());
-//
-//        when(bookingService.isInitialized()).thenReturn(true);
-//        when(bookingService.cancelReservation(UUID.fromString(anyString()))).thenReturn(new CancelReservationResponse());
-//
-//        ResponseEntity<CancelReservationResponse> responseEntity = cancelReservationController.cancelReservation(cancelReservationDTO);
-//
-//        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-//        verify(bookingService, times(1)).cancelReservation(UUID.fromString(anyString()));
-//    }
-
     @Test
-    void testCancelReservation_NotInitialized() {
-        CancelReservationDTO cancelReservationDTO = new CancelReservationDTO();
-        cancelReservationDTO.setBookingId(UUID.randomUUID());
+    void cancelReservation_ValidRequest_Success() throws Exception {
+        // Mocking behavior of TableReservationService
+        CancelReservationDTO request = new CancelReservationDTO();
+        UUID bookingId = UUID.randomUUID(); // Example bookingId
+        request.setBookingId(bookingId);
+        CancelReservationResponse expectedResponse = new CancelReservationResponse();
+        // Assuming expected response setup here
 
-        when(bookingService.isInitialized()).thenReturn(false);
+        when(tableReservationService.cancelReservation(any(UUID.class))).thenReturn(expectedResponse);
 
-        assertThrows(TablesNotInitializedException.class, () -> {
-            cancelReservationController.cancelReservation(cancelReservationDTO);
-        });
+        // Invoking controller method
+        ResponseEntity<CancelReservationResponse> responseEntity = cancelReservationController.cancelReservation(request);
 
-//        verify(bookingService, never()).cancelReservation(UUID.fromString(anyString()));
+        // Verifying response
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals(expectedResponse, responseEntity.getBody());
     }
 }

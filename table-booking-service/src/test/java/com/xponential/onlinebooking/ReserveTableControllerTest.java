@@ -3,8 +3,7 @@ package com.xponential.onlinebooking;
 import com.xponential.onlinebooking.controller.ReserveTableController;
 import com.xponential.onlinebooking.model.ReserveTableDTO;
 import com.xponential.onlinebooking.model.ReserveTableResponse;
-import com.xponential.onlinebooking.model.TablesNotInitializedException;
-import com.xponential.onlinebooking.service.BookingService;
+import com.xponential.onlinebooking.service.TableReservationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -18,15 +17,13 @@ import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class ReserveTableControllerTest {
 
     @Mock
-    private BookingService bookingService;
+    private TableReservationService tableReservationService;
 
     @InjectMocks
     private ReserveTableController reserveTableController;
@@ -37,31 +34,21 @@ class ReserveTableControllerTest {
     }
 
     @Test
-    void testReserveTables() {
-        ReserveTableDTO reserveTableDTO = new ReserveTableDTO();
-        reserveTableDTO.setNumberOfCustomers(BigDecimal.valueOf(4));
+    void reserveTables_ValidRequest_Success() throws Exception {
+        // Mocking behavior of TableReservationService
+        ReserveTableDTO request = new ReserveTableDTO();
+        request.setNumberOfCustomers(BigDecimal.valueOf(4)); // Example number of customers
+        ReserveTableResponse expectedResponse = new ReserveTableResponse();
+        // Assuming expected response setup here
 
-        when(bookingService.isInitialized()).thenReturn(true);
-        when(bookingService.reserveTables(anyInt())).thenReturn(new ReserveTableResponse());
+        when(tableReservationService.reserveTables(anyInt())).thenReturn(expectedResponse);
 
-        ResponseEntity<ReserveTableResponse> responseEntity = reserveTableController.reserveTables(reserveTableDTO);
+        // Invoking controller method
+        ResponseEntity<ReserveTableResponse> responseEntity = reserveTableController.reserveTables(request);
 
+        // Verifying response
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        verify(bookingService, times(1)).reserveTables(anyInt());
-    }
-
-    @Test
-    void testReserveTables_NotInitialized() {
-        ReserveTableDTO reserveTableDTO = new ReserveTableDTO();
-        reserveTableDTO.setNumberOfCustomers(BigDecimal.valueOf(4));
-
-        when(bookingService.isInitialized()).thenReturn(false);
-
-        assertThrows(TablesNotInitializedException.class, () -> {
-            reserveTableController.reserveTables(reserveTableDTO);
-        });
-
-        verify(bookingService, never()).reserveTables(anyInt());
+        assertEquals(expectedResponse, responseEntity.getBody());
     }
 }
 

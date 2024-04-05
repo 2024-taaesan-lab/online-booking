@@ -1,29 +1,38 @@
-# Online Booking Application 
+# Online Booking Application
 
+## Overview
+This project addresses the challenge of online table booking for restaurants. It begins with a meticulous outlining of requirements and the design of an API. Leveraging open APIs, a basic version is created, followed by the integration of a code generator to expedite development. Test-Driven Development (TDD) principles are applied to ensure smooth operation and appropriate testing.
 
+## Key Features
+- API-First Approach: The development process prioritizes API design, fostering collaboration between designers and developers while streamlining workflow.
 
-----
+- Parallel Development: The API-first methodology enables simultaneous work by designers and developers, enhancing efficiency and reducing time-to-market.
 
-### Docker - Required Software
-- Docker: Download and install the Docker from the official Docker website: https://docs.docker.com/get-docker/
+- Robust Documentation: OpenAPI documentation is provided for clear understanding and seamless integration of the application.
 
-### Docker - Instructions
+![Online Booking Application](./resources/K7.gif)
 
-1. Run docker command below, the image was been push to docker hub.
+## Docker Instructions
+
+### Required Software
+- Docker: [Download Docker](https://docs.docker.com/get-docker/)
+
+### Usage
+1. Run the following Docker command to deploy the application:
 ```Shell
 docker run -p 8080:8080 taaesan/table-booking-service:latest
 ```
 2. Once the application is running, you can access the OpenAPI documentation at:  
 http://localhost:8080/swagger-ui/index.html  
 
+## Maven Instructions  
 
----
-### Maven - Required Software
-- Java 17: Download and install the latest Java Development Kit (JDK) 17 from the official Oracle website: https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html  
-- Maven 3.9+: Download and install Apache Maven version 3.9 or later from the official Maven website: https://maven.apache.org/download.cgi  
+### Required Software
+Java 17:[ Download JDK 17](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)  
+Maven 3.9+: [Download Maven](https://maven.apache.org/download.cgi)
 
-### Maven - Instructions
-1. Navigate to the directory named table-booking-service.
+### Usage
+1. Navigate to the 'table-booking-service' directory:
 ```Shell
 cd table-booking-service
 ```  
@@ -43,12 +52,16 @@ http://localhost:8080/swagger-ui/index.html
 
 
 ----
-### Avaliable APIs
+### APIs Contract
 
 | Operation  | Resource | HTTP Verb | Success Code | Error Code |
 | ------------- | ------------- | ------------- | ------------- | ------------- |
-| Initialize Tables | /initializeTables | POST | 200  | 409 | 
-| Reserve Tables | /reserveTable | POST | 200  | 409 | 
-| Cancel Reservation | /cancelReservation | POST | 200  | 409 | 
+| Initialize Tables | /initializeTables | POST | 200  | 409 - Tables already initialized | 
+| Reserve Tables | /reserveTable | POST | 200  | 400 - Not enough tables for all customers <br>  503 - Not enough tables for all customers | 
+| Cancel Reservation | /cancelReservation | POST | 200  | 404 - Booking ID not found | 
+
+### Service Layer
+
+![Strategy](./resources/X8.jpg)
 
 
