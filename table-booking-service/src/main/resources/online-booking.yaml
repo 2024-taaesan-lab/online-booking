@@ -167,7 +167,10 @@ components:
     CancelReservationResponse:
       type: object
       properties:
-        freedTables:
+        bookingId:
+          type: string
+          format: uuid
+        bookedTables:
           type: number
         remainingTables:
           type: number

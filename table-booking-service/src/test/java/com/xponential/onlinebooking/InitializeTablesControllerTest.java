@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -23,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 public class InitializeTablesControllerTest {
-
     @Mock
     private BookingService bookingService;
 
@@ -32,35 +32,34 @@ public class InitializeTablesControllerTest {
 
     @BeforeEach
     void setUp() {
-        initializeTablesController = new InitializeTablesController();
-        bookingService = mock(BookingService.class);
-        initializeTablesController.setBookingService(bookingService);
+        MockitoAnnotations.initMocks(this);
     }
 
     @Test
-    void testInitializeTablesSuccess() {
-
+    void testInitializeTables() {
         InitializeTablesDTO initializeTablesDTO = new InitializeTablesDTO();
-        initializeTablesDTO.setNumberOfTables(BigDecimal.valueOf(5));
+        initializeTablesDTO.setNumberOfTables(BigDecimal.TEN);
 
-        Deque<UUID> availableTables = new ArrayDeque<>();
-        when(bookingService.getAvailableTables()).thenReturn(availableTables);
+        when(bookingService.isInitialized()).thenReturn(false);
+        when(bookingService.initializeTables(anyInt())).thenReturn(new InitializeTablesResponse());
 
-        ResponseEntity<InitializeTablesResponse> response = initializeTablesController.initializeTables(initializeTablesDTO);
+        ResponseEntity<InitializeTablesResponse> responseEntity = initializeTablesController.initializeTables(initializeTablesDTO);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(5, response.getBody().getNumberOfTables().intValue());
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        verify(bookingService, times(1)).initializeTables(anyInt());
     }
 
     @Test
-    void testInitializeTablesAlreadyInitialized() {
+    void testInitializeTables_AlreadyInitialized() {
         InitializeTablesDTO initializeTablesDTO = new InitializeTablesDTO();
-        initializeTablesDTO.setNumberOfTables(BigDecimal.valueOf(5));
+        initializeTablesDTO.setNumberOfTables(BigDecimal.TEN);
 
-        Deque<UUID> availableTables = new ArrayDeque<>();
-        when(bookingService.getAvailableTables()).thenReturn(availableTables);
         when(bookingService.isInitialized()).thenReturn(true);
 
-        assertThrows(TablesAlreadyInitializedException.class, () -> initializeTablesController.initializeTables(initializeTablesDTO));
+        assertThrows(TablesAlreadyInitializedException.class, () -> {
+            initializeTablesController.initializeTables(initializeTablesDTO);
+        });
+
+        verify(bookingService, never()).initializeTables(anyInt());
     }
 }

@@ -39,3 +39,11 @@ http://localhost:8080/swagger-ui/index.html
 ----
 ### Docker - Instructions
 
+```Shell
+mvn package -Dmaven.test.skip=true
+
+docker build -t taaesan/table-booking-service:latest .
+
+docker run -d -p 8080:8080 taaesan/table-booking-service:latest
+
+```

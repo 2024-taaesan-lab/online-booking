@@ -22,17 +22,8 @@ public class InitializeTablesController implements InitializeTablesApi {
     @Override
     @PostMapping("/initializeTables")
     public ResponseEntity<InitializeTablesResponse> initializeTables(@RequestBody InitializeTablesDTO initializeTablesDTO) {
-
         if (!bookingService.isInitialized()) {
-            // Initialization logic
-            for (int i = 0; i < initializeTablesDTO.getNumberOfTables().intValue(); i++) {
-                bookingService.getAvailableTables().add(UUID.randomUUID()); // Each table initially has 4 seats
-            }
-
-            bookingService.setInitialized(true);
-            InitializeTablesResponse response = new InitializeTablesResponse();
-            response.setNumberOfTables(BigDecimal.valueOf(bookingService.getAvailableTables().size()));
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(bookingService.initializeTables(initializeTablesDTO.getNumberOfTables().intValue()));
         } else {
             throw new TablesAlreadyInitializedException();
         }
