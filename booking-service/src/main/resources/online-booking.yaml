@@ -29,6 +29,13 @@ components:
       properties:
         numberOfCustomers:
           type: number
+    ReserveTableResponse:
+      type: object
+      properties:
+        bookedTables:
+          type: number
+        remainingTables:
+          type: number
     CancelReservationDTO:
       type: object
       properties:
@@ -36,7 +43,7 @@ components:
           type: number
 
   responses:
-    BadRequest:
+    NotEnoughTablesForAllCustomersException:
       description: Bad Request
       content:
         application/json:
@@ -49,7 +56,13 @@ components:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
     TablesAlreadyInitializedException:
-      description: TablesAlreadyInitializedException
+      description: Tables already initialized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    TablesNotInitializedException:
+      description: Tables not initialized
       content:
         application/json:
           schema:
@@ -103,9 +116,9 @@ paths:
         - The table must not be shared with customers who are in different groups.
         - The position of the tables does not matter, and they do not need to be close to each other.
 
-      operationId: depositToAccount
+      operationId: reserveTables
       requestBody:
-        description: Account number and desired amount to deposit
+        description: Reserves tables in the restaurant for a group of customers.
         content:
           application/json:
             schema:
@@ -114,12 +127,22 @@ paths:
       responses:
         '200':
           description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReserveTableResponse'
         '400':
           description: Not enough tables for all customers
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/BadRequest'
+                $ref: '#/components/responses/NotEnoughTablesForAllCustomersException'
+        '503':
+          description: Tables not initialized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/TablesNotInitializedException'
   /cancelReservation:
     post:
       tags:
@@ -135,7 +158,7 @@ paths:
         - Returns an error if the provided Booking ID is not found.
       operationId: cancelReservation
       requestBody:
-        description: Account number and desired amount to deposit
+        description: Cancel Reservation
         content:
           application/json:
             schema:

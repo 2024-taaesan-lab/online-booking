@@ -1,5 +1,6 @@
 package com.xponential.onlinebooking.exception;
 
+import com.xponential.onlinebooking.model.NotEnoughTablesForAllCustomersException;
 import com.xponential.onlinebooking.model.TablesAlreadyInitializedException;
 import com.xponential.onlinebooking.model.ErrorResponse;
 import jakarta.validation.ConstraintViolationException;
@@ -28,6 +29,14 @@ public class BookingExceptionHandler {
         errorResponse.setStatus(HttpStatus.CONFLICT.value());
         errorResponse.setMessage(ex.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handleException(NotEnoughTablesForAllCustomersException ex) {
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+        errorResponse.setMessage(ex.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     private ResponseEntity<ErrorResponse> createResponse(RuntimeException ex) {
