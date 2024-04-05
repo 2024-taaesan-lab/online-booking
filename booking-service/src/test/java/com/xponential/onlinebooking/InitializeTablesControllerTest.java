@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.xponential.onlinebooking.controller.InitializeTablesController;
 import com.xponential.onlinebooking.model.InitializeTablesDTO;
+import com.xponential.onlinebooking.model.InitializeTablesResponse;
 import com.xponential.onlinebooking.model.TablesAlreadyInitializedException;
 import com.xponential.onlinebooking.service.BookingService;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,14 +39,17 @@ public class InitializeTablesControllerTest {
 
     @Test
     void testInitializeTablesSuccess() {
+
         InitializeTablesDTO initializeTablesDTO = new InitializeTablesDTO();
         initializeTablesDTO.setNumberOfTables(BigDecimal.valueOf(5));
 
-        ResponseEntity<String> response = initializeTablesController.initializeTables(initializeTablesDTO);
+        Deque<UUID> availableTables = new ArrayDeque<>();
+        when(bookingService.getAvailableTables()).thenReturn(availableTables);
+
+        ResponseEntity<InitializeTablesResponse> response = initializeTablesController.initializeTables(initializeTablesDTO);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Tables initialized successfully.", response.getBody());
-        verify(bookingService, times(5)).getTables();
+        assertEquals(5, response.getBody().getNumberOfTables().intValue());
     }
 
     @Test
@@ -51,12 +57,10 @@ public class InitializeTablesControllerTest {
         InitializeTablesDTO initializeTablesDTO = new InitializeTablesDTO();
         initializeTablesDTO.setNumberOfTables(BigDecimal.valueOf(5));
 
-        // Simulate tables already initialized
-        initializeTablesController.initializeTables(initializeTablesDTO);
+        Deque<UUID> availableTables = new ArrayDeque<>();
+        when(bookingService.getAvailableTables()).thenReturn(availableTables);
+        when(bookingService.isInitialized()).thenReturn(true);
 
-        // Second initialization attempt should throw Conflict exception
         assertThrows(TablesAlreadyInitializedException.class, () -> initializeTablesController.initializeTables(initializeTablesDTO));
-
-//        verify(bookingService, times(1)).getTables(); // Verify that bookingService.getTables() is only called once
     }
 }

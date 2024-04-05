@@ -13,6 +13,8 @@ import org.mockito.Mock;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -42,16 +44,22 @@ public class CancelReservationControllerTest {
         cancelReservationDTO.setBookingId(bookingId);
 
         // Mock tables availability
-        Map<UUID, Integer> tables = new HashMap<>();
-        tables.put(bookingId, 4);
-        when(bookingService.getTables()).thenReturn(tables);
+        Deque<UUID> availableTables = new ArrayDeque<>();
+        for(int i=0; i < 8; i++) availableTables.add(UUID.randomUUID());
+        when(bookingService.getAvailableTables()).thenReturn(availableTables);
+
+        //Expected resevedMap
+        Map<UUID, Deque> reservedTableMap = new HashMap<>();
+        Deque<UUID> reservedTables = new ArrayDeque<>();
+        reservedTables.add(UUID.randomUUID());
+        reservedTableMap.put(bookingId, reservedTables);
+        when(bookingService.getReservedTableMap()).thenReturn(reservedTableMap);
+        when(bookingService.getReservedTables()).thenReturn(reservedTables);
 
         ResponseEntity<CancelReservationResponse> response = cancelReservationController.cancelReservation(cancelReservationDTO);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(4, response.getBody().getFreedTables().intValue());
-        assertEquals(0, response.getBody().getRemainingTables().intValue());
-//        verify(bookingService, times(1)).getTables();
+        assertEquals(9, response.getBody().getRemainingTables().intValue());
     }
 
     @Test
@@ -60,8 +68,10 @@ public class CancelReservationControllerTest {
         UUID bookingId = UUID.randomUUID();
         cancelReservationDTO.setBookingId(bookingId);
 
-        // Mock tables not initialized
-        when(bookingService.getTables()).thenReturn(new HashMap<>());
+        // Mock tables availability
+        Deque<UUID> availableTables = new ArrayDeque<>();
+//        for(int i=0; i < 8; i++) availableTables.add(UUID.randomUUID());
+        when(bookingService.getAvailableTables()).thenReturn(availableTables);
 
         // Call the API
         try {
@@ -71,7 +81,6 @@ public class CancelReservationControllerTest {
             assertEquals("Tables not initialized", e.getMessage());
         }
 
-//        verify(bookingService, times(1)).getTables();
     }
 
     @Test
@@ -81,9 +90,17 @@ public class CancelReservationControllerTest {
         cancelReservationDTO.setBookingId(bookingId);
 
         // Mock tables availability
-        Map<UUID, Integer> tables = new HashMap<>();
-        tables.put(UUID.randomUUID(), 4); // Different booking ID
-        when(bookingService.getTables()).thenReturn(tables);
+        Deque<UUID> availableTables = new ArrayDeque<>();
+        for(int i=0; i < 8; i++) availableTables.add(UUID.randomUUID());
+        when(bookingService.getAvailableTables()).thenReturn(availableTables);
+
+        //Expected resevedMap
+        Map<UUID, Deque> reservedTableMap = new HashMap<>();
+        Deque<UUID> reservedTables = new ArrayDeque<>();
+        reservedTables.add(UUID.randomUUID());
+        reservedTableMap.put(UUID.randomUUID(), reservedTables);
+        when(bookingService.getReservedTableMap()).thenReturn(reservedTableMap);
+        when(bookingService.getReservedTables()).thenReturn(reservedTables);
 
         // Call the API
         try {
@@ -93,6 +110,5 @@ public class CancelReservationControllerTest {
             assertEquals("Booking ID not found.", e.getMessage());
         }
 
-//        verify(bookingService, times(1)).getTables();
     }
 }

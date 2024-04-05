@@ -1,5 +1,6 @@
 package com.xponential.onlinebooking.controller;
 
+import com.xponential.onlinebooking.model.InitializeTablesResponse;
 import com.xponential.onlinebooking.model.TablesAlreadyInitializedException;
 import com.xponential.onlinebooking.model.InitializeTablesDTO;
 import com.xponential.onlinebooking.service.BookingService;
@@ -10,36 +11,34 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1")
 public class InitializeTablesController implements InitializeTablesApi {
-
-    private boolean initialized;
-
-    public void setBookingService(BookingService bookingService) {
-        this.bookingService = bookingService;
-    }
-
     @Autowired
     private BookingService bookingService;
     @Override
     @PostMapping("/initializeTables")
-    public ResponseEntity<String> initializeTables(@RequestBody InitializeTablesDTO initializeTablesDTO) {
+    public ResponseEntity<InitializeTablesResponse> initializeTables(@RequestBody InitializeTablesDTO initializeTablesDTO) {
 
-        if (!initialized) {
+        if (!bookingService.isInitialized()) {
             // Initialization logic
             for (int i = 0; i < initializeTablesDTO.getNumberOfTables().intValue(); i++) {
-                bookingService.getTables().put(UUID.randomUUID(), 4); // Each table initially has 4 seats
+                bookingService.getAvailableTables().add(UUID.randomUUID()); // Each table initially has 4 seats
             }
 
-            initialized = true;
-            return ResponseEntity.ok("Tables initialized successfully.");
+            bookingService.setInitialized(true);
+            InitializeTablesResponse response = new InitializeTablesResponse();
+            response.setNumberOfTables(BigDecimal.valueOf(bookingService.getAvailableTables().size()));
+            return ResponseEntity.ok(response);
         } else {
             throw new TablesAlreadyInitializedException();
         }
+    }
+
+    public void setBookingService(BookingService bookingService) {
+        this.bookingService = bookingService;
     }
 }

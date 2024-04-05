@@ -21,6 +21,11 @@ components:
       properties:
         numberOfTables:
           type: number
+    InitializeTablesResponse:
+      type: object
+      properties:
+        numberOfTables:
+          type: number
     ReserveTableDTO:
       type: object
       properties:
@@ -98,14 +103,14 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/InitializeTablesDTO'
-              
+
       responses:
         '200':
           description: Success
           content:
             application/json:
               schema:
-                type: string
+                $ref: '#/components/schemas/InitializeTablesResponse'
         '409':
           description: Tables already initialized
           content:

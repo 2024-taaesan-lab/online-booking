@@ -29,39 +29,31 @@ public class ReserveTableController implements ReserveTableApi {
     @Override
     @PostMapping("/reserveTable")
     public ResponseEntity<ReserveTableResponse> reserveTables(ReserveTableDTO reserveTableDTO) {
-        if (bookingService.getTables().isEmpty()) {
+        if (!bookingService.isInitialized()) {
             throw new TablesNotInitializedException();
         }
 
-
         int requiredTables = (int) Math.ceil((double) reserveTableDTO.getNumberOfCustomers().intValue() / 4);
 
-        if (requiredTables > bookingService.getTables().keySet().size()) {
+        if (requiredTables > bookingService.getAvailableTables().size()) {
             throw new NotEnoughTablesForAllCustomersException();
         }
 
         int reservedTables = 0;
         UUID bookingId = UUID.randomUUID();
 
-        for (Map.Entry<UUID, Integer> entry : bookingService.getTables().entrySet()) {
-            if (requiredTables == 0) {
-                break;
-            }
-            entry.setValue(entry.getValue() - 1);
-            reservedTables++;
-            if (entry.getValue() == 0) {
-                bookingService.getTables().remove(entry.getKey());
-            }
-            requiredTables--;
+        for(int i = requiredTables; i > 0; i--) {
+            UUID table = bookingService.getAvailableTables().pollFirst();
+            bookingService.getReservedTables().add(table);
         }
 
-        int remainingTables = bookingService.getTables().size() - reservedTables;
+        bookingService.getReservedTableMap().put(bookingId, bookingService.getReservedTables());
+
         ReserveTableResponse reserveTableResponse = new ReserveTableResponse();
         reserveTableResponse.setBookingId(bookingId);
-        reserveTableResponse.setBookedTables(BigDecimal.valueOf(reservedTables));
-        reserveTableResponse.setRemainingTables(BigDecimal.valueOf(remainingTables));
+        reserveTableResponse.setBookedTables(BigDecimal.valueOf(bookingService.getReservedTables().size()));
+        reserveTableResponse.setRemainingTables(BigDecimal.valueOf(bookingService.getAvailableTables().size()));
 
-//        return "Reservation successful. Booked tables: " + bookedTables + ". Remaining tables: " + remainingTables;
         return ResponseEntity.ok(reserveTableResponse);
     }
 }

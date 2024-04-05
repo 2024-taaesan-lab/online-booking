@@ -6,13 +6,13 @@ import com.xponential.onlinebooking.model.CancelReservationResponse;
 import com.xponential.onlinebooking.model.TablesNotInitializedException;
 import com.xponential.onlinebooking.service.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
+import java.util.Deque;
 import java.util.Map;
 import java.util.UUID;
 
@@ -28,26 +28,21 @@ public class CancelReservationController implements CancelReservationApi {
     @Override
     @PostMapping("/cancelReservation")
     public ResponseEntity<CancelReservationResponse> cancelReservation(CancelReservationDTO cancelReservationDTO) {
-        if (bookingService.getTables().isEmpty()) {
+        if (bookingService.getAvailableTables().isEmpty()) {
             throw new TablesNotInitializedException();
         }
 
-        int freedTables = 0;
+        Deque<UUID> reservedTables = bookingService.getReservedTableMap().remove(cancelReservationDTO.getBookingId());
 
-        for (Map.Entry<UUID, Integer> entry : bookingService.getTables().entrySet()) {
-            if (entry.getKey().equals(cancelReservationDTO.getBookingId())) {
-                freedTables += entry.getValue();
-                bookingService.getTables().remove(entry.getKey());
-            }
-        }
-
-        if (freedTables == 0) {
+        if (reservedTables == null) {
             throw new BookingIDNotFoundException();
         }
 
+        bookingService.getAvailableTables().addAll(reservedTables);
+        bookingService.getReservedTables().clear();
+
         CancelReservationResponse response = new CancelReservationResponse();
-        response.setFreedTables(BigDecimal.valueOf(freedTables));
-        response.setRemainingTables(BigDecimal.valueOf(bookingService.getTables().size()));
+        response.setRemainingTables(BigDecimal.valueOf(bookingService.getAvailableTables().size()));
         return ResponseEntity.ok(response);
     }
 }
