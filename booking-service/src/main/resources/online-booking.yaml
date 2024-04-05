@@ -5,14 +5,89 @@ info:
   version: 1.0-SNAPSHOT
 servers:
   - url: http://localhost/api/v1
-tags:
-  - name: bookings
-    description: Operations related to managing reservations
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          description: HTTP status code
+        message:
+          type: string
+          description: Error message
+    InitializeTablesDTO:
+      type: object
+      properties:
+        numberOfTables:
+          type: number
+    InitializeTablesResponse:
+      type: object
+      properties:
+        numberOfTables:
+          type: number
+    ReserveTableDTO:
+      type: object
+      properties:
+        numberOfCustomers:
+          type: number
+    ReserveTableResponse:
+      type: object
+      properties:
+        bookingId:
+          type: string
+          format: uuid
+        bookedTables:
+          type: number
+        remainingTables:
+          type: number
+    CancelReservationDTO:
+      type: object
+      properties:
+        bookingId:
+          type: string
+          format: uuid
+    CancelReservationResponse:
+      type: object
+      properties:
+        freedTables:
+          type: number
+        remainingTables:
+          type: number
+
+  responses:
+    NotEnoughTablesForAllCustomersException:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    BookingIDNotFoundException:
+      description: Resource Not Found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    TablesAlreadyInitializedException:
+      description: Tables already initialized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    TablesNotInitializedException:
+      description: Tables not initialized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NoContent:
+      description: No Content
+      content:
+        application/json:
+          schema: {}  # Empty schema for 204 No Content
 paths:
   /initializeTables:
     post:
-      tags:
-        - bookings
       summary: Initialize Tables
       description: |
         The `initializeTables` API initializes all tables in the restaurant.
@@ -23,32 +98,27 @@ paths:
         - Returns an error if this API is called again after initialization.
       operationId: initializeTables
       requestBody:
-        description: Account number and desired amount to deposit
+        description: The `initializeTables` API initializes all tables in the restaurant.
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/InitializeTablesDTO'
-              
+
       responses:
         '200':
           description: Success
           content:
             application/json:
               schema:
-                type: string
-              examples:
-                message:
-                  value: Tables initialized successfully
+                $ref: '#/components/schemas/InitializeTablesResponse'
         '409':
           description: Tables already initialized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InitializeTablesError'
+                $ref: '#/components/responses/TablesAlreadyInitializedException'
   /reserveTable:
     post:
-      tags:
-        - bookings
       summary: Reserve Tables
       description: |
         The `reserveTable` API in the restaurant for a group of customers.
@@ -59,27 +129,35 @@ paths:
         - The table must not be shared with customers who are in different groups.
         - The position of the tables does not matter, and they do not need to be close to each other.
 
-      operationId: depositToAccount
+      operationId: reserveTables
       requestBody:
-        description: Account number and desired amount to deposit
+        description: Reserves tables in the restaurant for a group of customers.
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/ReserveTableDTO'
         required: true
       responses:
-        '204':
+        '200':
           description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReserveTableResponse'
         '400':
           description: Not enough tables for all customers
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ReserveTableError'
+                $ref: '#/components/responses/NotEnoughTablesForAllCustomersException'
+        '503':
+          description: Tables not initialized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/TablesNotInitializedException'
   /cancelReservation:
     post:
-      tags:
-        - bookings
       summary: Cancel Reservation
       description: |
         The `cancelReservation` API allows canceling a reservation in the restaurant.
@@ -91,50 +169,22 @@ paths:
         - Returns an error if the provided Booking ID is not found.
       operationId: cancelReservation
       requestBody:
-        description: Account number and desired amount to deposit
+        description: Cancel Reservation
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/CancelReservationDTO'
         required: true
       responses:
-        '204':
+        '200':
           description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CancelReservationResponse'
         '404':
           description: Booking ID not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CancelReservationError'
-components:
-  schemas:
-    InitializeTablesDTO:
-      type: object
-      properties:
-        numberOfTables:
-          type: number
-    InitializeTablesError:
-      type: object
-      properties:
-        message:
-          type: string
-    ReserveTableDTO:
-      type: object
-      properties:
-        numberOfCustomers:
-          type: number
-    ReserveTableError:
-      type: object
-      properties:
-        message:
-          type: string
-    CancelReservationDTO:
-      type: object
-      properties:
-        bookingId:
-          type: number
-    CancelReservationError:
-      type: object
-      properties:
-        message:
-          type: string
+                $ref: '#/components/responses/BookingIDNotFoundException'

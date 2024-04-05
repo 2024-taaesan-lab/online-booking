@@ -59,6 +59,8 @@
 								<openApiNullable>false</openApiNullable>
 								<interfaceOnly>true</interfaceOnly>
 								<useSpringBoot3>true</useSpringBoot3>
+								<modelPackage>com.xponential.onlinebooking.model</modelPackage>
+								<apiPackage>com.xponential.onlinebooking.controller</apiPackage>
 							</configOptions>
 						</configuration>
 					</execution>
