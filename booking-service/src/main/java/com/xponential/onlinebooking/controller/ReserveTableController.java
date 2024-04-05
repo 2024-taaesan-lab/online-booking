@@ -6,17 +6,23 @@ import com.xponential.onlinebooking.model.ReserveTableResponse;
 import com.xponential.onlinebooking.model.TablesNotInitializedException;
 import com.xponential.onlinebooking.service.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1")
 public class ReserveTableController implements ReserveTableApi {
+
+    public void setBookingService(BookingService bookingService) {
+        this.bookingService = bookingService;
+    }
 
     @Autowired
     private BookingService bookingService;
@@ -27,32 +33,32 @@ public class ReserveTableController implements ReserveTableApi {
             throw new TablesNotInitializedException();
         }
 
-        int remainingCustomers = reserveTableDTO.getNumberOfCustomers().intValue();
-        int bookedTables = 0;
 
-        for (List<Integer> table : bookingService.getTables()) {
-            int remainingSeats = 4 - table.size();
-            if (remainingSeats >= remainingCustomers) {
-                for (int i = 0; i < remainingCustomers; i++) {
-                    table.add(1); // Add customers to the table
-                }
-                bookedTables++;
-                break;
-            } else if (remainingSeats > 0) {
-                for (int i = 0; i < remainingSeats; i++) {
-                    table.add(1); // Add customers to the table
-                }
-                remainingCustomers -= remainingSeats;
-                bookedTables++;
-            }
-        }
+        int requiredTables = (int) Math.ceil((double) reserveTableDTO.getNumberOfCustomers().intValue() / 4);
 
-        if (bookedTables == 0) {
+        if (requiredTables > bookingService.getTables().keySet().size()) {
             throw new NotEnoughTablesForAllCustomersException();
         }
-        int remainingTables = bookingService.getTables().size() - bookedTables;
+
+        int reservedTables = 0;
+        UUID bookingId = UUID.randomUUID();
+
+        for (Map.Entry<UUID, Integer> entry : bookingService.getTables().entrySet()) {
+            if (requiredTables == 0) {
+                break;
+            }
+            entry.setValue(entry.getValue() - 1);
+            reservedTables++;
+            if (entry.getValue() == 0) {
+                bookingService.getTables().remove(entry.getKey());
+            }
+            requiredTables--;
+        }
+
+        int remainingTables = bookingService.getTables().size() - reservedTables;
         ReserveTableResponse reserveTableResponse = new ReserveTableResponse();
-        reserveTableResponse.setBookedTables(BigDecimal.valueOf(bookedTables));
+        reserveTableResponse.setBookingId(bookingId);
+        reserveTableResponse.setBookedTables(BigDecimal.valueOf(reservedTables));
         reserveTableResponse.setRemainingTables(BigDecimal.valueOf(remainingTables));
 
 //        return "Reservation successful. Booked tables: " + bookedTables + ". Remaining tables: " + remainingTables;

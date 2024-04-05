@@ -1,6 +1,7 @@
 package com.xponential.onlinebooking;
 
 import com.xponential.onlinebooking.controller.ReserveTableController;
+import com.xponential.onlinebooking.model.NotEnoughTablesForAllCustomersException;
 import com.xponential.onlinebooking.model.ReserveTableDTO;
 import com.xponential.onlinebooking.model.ReserveTableResponse;
 import com.xponential.onlinebooking.model.TablesNotInitializedException;
@@ -9,15 +10,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -32,54 +33,69 @@ class ReserveTableControllerTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.initMocks(this);
+        reserveTableController = new ReserveTableController();
+        bookingService = mock(BookingService.class);
+        reserveTableController.setBookingService(bookingService);
     }
 
     @Test
-    void testReserveTables_Success() {
-        // Arrange
+    void testReserveTablesSuccess() {
         ReserveTableDTO reserveTableDTO = new ReserveTableDTO();
-        reserveTableDTO.setNumberOfCustomers(BigDecimal.valueOf(6));
+        reserveTableDTO.setNumberOfCustomers(BigDecimal.valueOf(8));
 
-        List<List<Integer>> tables = new ArrayList<>();
-        tables.add(new ArrayList<>(Arrays.asList(1, 1, 1, 1))); // Fully occupied table
-        tables.add(new ArrayList<>(Arrays.asList(1, 1))); // Empty table
-        tables.add(new ArrayList<>()); // Empty table
-
-
+        // Mock tables availability
+        Map<UUID, Integer> tables = new HashMap<>();
+        tables.put(UUID.randomUUID(), 4);
+        tables.put(UUID.randomUUID(), 4);
         when(bookingService.getTables()).thenReturn(tables);
 
-        // Act
-        ResponseEntity<ReserveTableResponse> responseEntity = reserveTableController.reserveTables(reserveTableDTO);
+        ResponseEntity<ReserveTableResponse> response = reserveTableController.reserveTables(reserveTableDTO);
 
-        // Assert
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals(2, responseEntity.getBody().getBookedTables().intValue());
-        assertEquals(1, responseEntity.getBody().getRemainingTables().intValue());
-
-        // Verify that bookingService.getTables() is called once
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(2, response.getBody().getBookedTables().intValue());
+        assertEquals(0, response.getBody().getRemainingTables().intValue());
 //        verify(bookingService, times(1)).getTables();
     }
 
     @Test
-    void testReserveTables_TablesNotInitialized() {
-        // Arrange
+    void testReserveTablesNotInitialized() {
         ReserveTableDTO reserveTableDTO = new ReserveTableDTO();
-        reserveTableDTO.setNumberOfCustomers(BigDecimal.valueOf(6));
+        reserveTableDTO.setNumberOfCustomers(BigDecimal.valueOf(4));
 
-        when(bookingService.getTables()).thenReturn(new ArrayList<>()); // Empty list indicating tables not initialized
+        // Mock tables not initialized
+        when(bookingService.getTables()).thenReturn(new HashMap<>());
 
-        // Act and Assert
+        // Call the API
         try {
             reserveTableController.reserveTables(reserveTableDTO);
         } catch (TablesNotInitializedException e) {
-            // Expected exception
+            // Exception expected
+            assertEquals("Tables not initialized", e.getMessage());
         }
 
-        // Verify that bookingService.getTables() is called once
         verify(bookingService, times(1)).getTables();
     }
 
-    // Add more test methods for other scenarios such as not enough tables for all customers
+    @Test
+    void testReserveTablesNotEnoughTables() {
+        ReserveTableDTO reserveTableDTO = new ReserveTableDTO();
+        reserveTableDTO.setNumberOfCustomers(BigDecimal.valueOf(10));
+
+        // Mock tables availability
+        Map<UUID, Integer> tables = new HashMap<>();
+        tables.put(UUID.randomUUID(), 4);
+        when(bookingService.getTables()).thenReturn(tables);
+
+        // Call the API
+        try {
+            reserveTableController.reserveTables(reserveTableDTO);
+        } catch (NotEnoughTablesForAllCustomersException e) {
+            // Exception expected
+            assertEquals("Not enough tables for all customers", e.getMessage());
+        }
+
+//        verify(bookingService, times(1)).getTables();
+    }
+
 }
 

@@ -12,29 +12,32 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1")
 public class InitializeTablesController implements InitializeTablesApi {
 
     private boolean initialized;
+
+    public void setBookingService(BookingService bookingService) {
+        this.bookingService = bookingService;
+    }
+
     @Autowired
     private BookingService bookingService;
     @Override
     @PostMapping("/initializeTables")
-    public ResponseEntity<Void> initializeTables(@RequestBody InitializeTablesDTO initializeTablesDTO) {
+    public ResponseEntity<String> initializeTables(@RequestBody InitializeTablesDTO initializeTablesDTO) {
 
         if (!initialized) {
             // Initialization logic
-            List<List<Integer>> tables = new ArrayList<>(bookingService.getTables());
-
             for (int i = 0; i < initializeTablesDTO.getNumberOfTables().intValue(); i++) {
-                tables.add(new ArrayList<>());
+                bookingService.getTables().put(UUID.randomUUID(), 4); // Each table initially has 4 seats
             }
 
-            bookingService.setTables(tables);
             initialized = true;
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok("Tables initialized successfully.");
         } else {
             throw new TablesAlreadyInitializedException();
         }

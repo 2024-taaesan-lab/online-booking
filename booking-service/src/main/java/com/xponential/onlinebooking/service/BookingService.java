@@ -3,21 +3,18 @@ package com.xponential.onlinebooking.service;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class BookingService {
 
-    private List<List<Integer>> tables;
-    public List<List<Integer>> getTables() {
+    final Map<UUID, Integer> tables = new HashMap<>();
+
+    public Map<UUID, Integer> getTables() {
         return tables;
     }
 
-    public void setTables(List<List<Integer>> tables) {
-        this.tables = tables;
-    }
-
-    BookingService(){
-        tables = new ArrayList<>();
-    }
 }

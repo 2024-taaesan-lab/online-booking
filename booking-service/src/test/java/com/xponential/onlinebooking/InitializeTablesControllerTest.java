@@ -1,26 +1,25 @@
 package com.xponential.onlinebooking;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import com.xponential.onlinebooking.controller.InitializeTablesController;
-import com.xponential.onlinebooking.model.TablesAlreadyInitializedException;
 import com.xponential.onlinebooking.model.InitializeTablesDTO;
+import com.xponential.onlinebooking.model.TablesAlreadyInitializedException;
 import com.xponential.onlinebooking.service.BookingService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
-import java.util.Collections;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-class InitializeTablesControllerTest {
+public class InitializeTablesControllerTest {
 
     @Mock
     private BookingService bookingService;
@@ -30,27 +29,34 @@ class InitializeTablesControllerTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.initMocks(this);
+        initializeTablesController = new InitializeTablesController();
+        bookingService = mock(BookingService.class);
+        initializeTablesController.setBookingService(bookingService);
     }
 
     @Test
-    void testInitializeTables() {
-        InitializeTablesDTO dto = new InitializeTablesDTO();
-        dto.setNumberOfTables(BigDecimal.valueOf(5));
-        ResponseEntity<Void> responseEntity = initializeTablesController.initializeTables(dto);
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+    void testInitializeTablesSuccess() {
+        InitializeTablesDTO initializeTablesDTO = new InitializeTablesDTO();
+        initializeTablesDTO.setNumberOfTables(BigDecimal.valueOf(5));
+
+        ResponseEntity<String> response = initializeTablesController.initializeTables(initializeTablesDTO);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Tables initialized successfully.", response.getBody());
+        verify(bookingService, times(5)).getTables();
     }
 
     @Test
-    void testInitializeTablesWhenAlreadyInitialized() {
-        InitializeTablesDTO dto = new InitializeTablesDTO();
-        dto.setNumberOfTables(BigDecimal.valueOf(5));
+    void testInitializeTablesAlreadyInitialized() {
+        InitializeTablesDTO initializeTablesDTO = new InitializeTablesDTO();
+        initializeTablesDTO.setNumberOfTables(BigDecimal.valueOf(5));
 
-        when(bookingService.getTables()).thenReturn(Collections.emptyList());
-
-        initializeTablesController.initializeTables(dto); // Initialize once
+        // Simulate tables already initialized
+        initializeTablesController.initializeTables(initializeTablesDTO);
 
         // Second initialization attempt should throw Conflict exception
-        assertThrows(TablesAlreadyInitializedException.class, () -> initializeTablesController.initializeTables(dto));
+        assertThrows(TablesAlreadyInitializedException.class, () -> initializeTablesController.initializeTables(initializeTablesDTO));
+
+//        verify(bookingService, times(1)).getTables(); // Verify that bookingService.getTables() is only called once
     }
 }
