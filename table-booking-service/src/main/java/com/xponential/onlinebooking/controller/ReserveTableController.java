@@ -39,7 +39,6 @@ public class ReserveTableController implements ReserveTableApi {
             throw new NotEnoughTablesForAllCustomersException();
         }
 
-        int reservedTables = 0;
         UUID bookingId = UUID.randomUUID();
 
         for(int i = requiredTables; i > 0; i--) {

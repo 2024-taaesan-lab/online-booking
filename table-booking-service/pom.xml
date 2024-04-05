@@ -32,6 +32,11 @@
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 			<version>2.5.0</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-surefire-plugin</artifactId>
+			<version>3.2.3</version>
+		</dependency>
 
 	</dependencies>
 
@@ -40,6 +45,15 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.2.3</version> <!-- Use the latest version -->
+				<configuration>
+					<reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
+					<useFile>false</useFile>
+				</configuration>
 			</plugin>
 			<plugin>
 
@@ -70,5 +84,21 @@
 
 		
 	</build>
+	<reporting>
+		<plugins>
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-surefire-report-plugin</artifactId>
+			<version>3.2.3</version>
+			<reportSets>
+			<reportSet>
+				<reports>
+				<report>report-only</report>
+				</reports>
+			</reportSet>
+			</reportSets>
+		</plugin>
+		</plugins>
+	</reporting>
 
 </project>
