@@ -12,5 +12,16 @@ POST http://localhost:8080/api/v1/reserveTable
 Content-Type: application/json
 
 {
-  "numberOfCustomers": 8
+  "numberOfCustomers": 2
+}
+
+
+
+
+###
+POST http://localhost:8080/api/v1/cancelReservation
+Content-Type: application/json
+
+{
+  "bookingId": "81069b06-4e34-4d94-96f4-78fc719c93cc"
 }
