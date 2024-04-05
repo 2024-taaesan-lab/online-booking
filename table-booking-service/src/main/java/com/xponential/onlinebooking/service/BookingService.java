@@ -13,11 +13,6 @@ import java.util.UUID;
 @Service
 public class BookingService {
 
-    final Map<UUID, Integer> tables = new HashMap<>();
-
-    public Map<UUID, Integer> getTables() {
-        return tables;
-    }
     private Deque<UUID> availableTables;
     private Deque<UUID> reservedTables;
     private Map<UUID, Deque> reservedTableMap;
@@ -48,6 +43,5 @@ public class BookingService {
         this.reservedTables = new ArrayDeque<>();
         this.reservedTableMap = new HashMap<>();
     }
-
 
 }
