@@ -1,36 +1,17 @@
-# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
-
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-name: Java CI with Maven
+name: Release
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  release:
+    types:
+      - edited
+      - released
 
 jobs:
-  build:
+  Release:
 
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up JDK 17
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: maven
-    # - name: Build with Maven
-    #   run: |
-    #     cd table-booking-service
-    #     mvn -B package
     - id: get_version
       name: Get version
       uses: jannemattila/get-version-from-tag@v3
@@ -39,4 +20,3 @@ jobs:
       run: |
         VERSION=$(echo "${{ steps.get_version.outputs.version }}")
         echo $VERSION
-
