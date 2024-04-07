@@ -12,6 +12,9 @@ import java.util.UUID;
 
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, UUID> {
+
+    @Query("SELECT u FROM Reservation u WHERE u.reservationId = :bookingId")
+    List<Reservation> findReservationByReservationId(@Param("bookingId") String bookingId);
     // You can add custom query methods if needed
 //    @Query("SELECT u FROM Reservation u WHERE u.reservation_id = :bookingId")
 //    List<TableModel> findReservedTablesByBookingId(@Param("bookingId") UUID bookingId);

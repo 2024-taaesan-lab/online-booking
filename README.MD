@@ -84,15 +84,18 @@ k exec -it postgres-65db968757-hqmsk -- psql -h localhost -U ps_user --password 
 Install ingress controller (Minikube)
 https://kubernetes.github.io/ingress-nginx/deploy/#minikube
 
-
+```Shell
 docker rmi -f $(docker images 'taaesan/table-booking-service-k8' -a -q)
 
 mvn package -Dmaven.test.skip=true 
-docker buildx build -t taaesan/table-booking-service-k8:0.0.13 .
-docker push taaesan/table-booking-service-k8:0.0.13
+docker buildx build -t taaesan/table-booking-service-k8:latest .
+docker push taaesan/table-booking-service-k8:latest
+
+k roll out restart deployment 
 
 docker tag taaesan/table-booking-service-k8:0.0.4 taaesan/table-booking-service-k8:latest
 
 docker push taaesan/table-booking-service-k8:0.0.5
 docker push taaesan/table-booking-service-k8:latest
+```
 

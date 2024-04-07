@@ -21,13 +21,16 @@ import java.util.UUID;
 public class TableModel {
     @Id
     @GeneratedValue
-    private UUID id;
+    private int id;
+
+    @Column(name = "table_key", nullable = false)
+    private String tableKey;
 
     @Column(name = "reserved", nullable = false)
     private boolean reserved;
 
     @Column(name = "reservation_id", nullable = true)
-    private UUID reservationId;
+    private String reservationId;
 
 //    @ManyToOne()
 //    @JoinColumn(name ="reservation_id", nullable = true)

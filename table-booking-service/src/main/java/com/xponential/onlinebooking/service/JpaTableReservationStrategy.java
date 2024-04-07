@@ -14,9 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Component(value = "jpaTableReservationStrategy")
@@ -34,7 +32,7 @@ public class JpaTableReservationStrategy implements TableReservationStrategy {
     public InitializeTablesResponse initializeTables(int numberOfTables) {
         for (int i = 0; i < numberOfTables; i++) {
             TableModel table = new TableModel();
-            table.setId(UUID.randomUUID());
+            table.setTableKey(UUID.randomUUID().toString());
             tableRepository.save(table);
         }
         InitializeTablesResponse response = new InitializeTablesResponse();
@@ -53,19 +51,18 @@ public class JpaTableReservationStrategy implements TableReservationStrategy {
         }
 
         Reservation reservation = new Reservation();
-        reservation.setId(UUID.randomUUID());
+        reservation.setReservationId(UUID.randomUUID().toString());
         reservationRepository.save(reservation);
 
-        List<UUID> reservedTableIds = new ArrayList<>();
         for (int i = 0; i < requiredTables; i++) {
             TableModel table = availableTables.get(i);
             table.setReserved(true);
-            table.setReservationId(reservation.getId());
+            table.setReservationId(reservation.getReservationId());
             tableRepository.save(table);
         }
 
         ReserveTableResponse response = new ReserveTableResponse();
-        response.setBookingId(reservation.getId());
+        response.setBookingId(UUID.fromString(reservation.getReservationId()));
         response.setBookedTables(BigDecimal.valueOf(requiredTables));
         response.setRemainingTables(BigDecimal.valueOf(availableTables.size() - requiredTables));
         return response;
@@ -74,19 +71,21 @@ public class JpaTableReservationStrategy implements TableReservationStrategy {
     @Override
     @Transactional
     public CancelReservationResponse cancelReservation(UUID bookingId) throws BookingIDNotFoundException {
-        Optional<Reservation> reservation = reservationRepository.findById(bookingId);
+        List<Reservation> reservation = reservationRepository.findReservationByReservationId(bookingId.toString());
 
-        if (reservation.isEmpty()) {
+        if (reservation == null || reservation.size() == 0) {
             throw new BookingIDNotFoundException();
         }
 
-        List<TableModel> reservedTables = tableRepository.findReservedTablesByBookingId(bookingId);
+        List<TableModel> reservedTables = tableRepository.findReservedTablesByBookingId(bookingId.toString());
 
         for (TableModel table : reservedTables) {
             table.setReserved(false);
             table.setReservationId(null);
             tableRepository.save(table);
         }
+
+        reservationRepository.delete(reservation.get(0));
 
         CancelReservationResponse response = new CancelReservationResponse();
         response.setBookedTables(BigDecimal.valueOf(reservedTables.size()));

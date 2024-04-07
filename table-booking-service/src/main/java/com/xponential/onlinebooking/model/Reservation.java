@@ -1,5 +1,6 @@
 package com.xponential.onlinebooking.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -15,7 +16,10 @@ import java.util.UUID;
 public class Reservation {
     @Id
     @GeneratedValue
-    private UUID id;
+    private int id;
+
+    @Column(name = "reservation_id", nullable = false)
+    private String reservationId;
 
 //    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "reservation")
 //    private List<TableModel> tables;
