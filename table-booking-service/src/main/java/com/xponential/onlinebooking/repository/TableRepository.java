@@ -14,7 +14,7 @@ public interface TableRepository extends JpaRepository<TableModel, UUID> {
     @Query("SELECT u FROM TableModel u WHERE u.reserved = false")
     List<TableModel> findAvailableTables();
 
-    @Query("SELECT u FROM TableModel u WHERE u.reservation_id = :bookingId")
+    @Query("SELECT u FROM TableModel u WHERE u.reservationId = :bookingId")
     List<TableModel> findReservedTablesByBookingId(@Param("bookingId") UUID bookingId);
 
     @Query("SELECT COUNT(u) FROM TableModel u WHERE u.reserved = :reserved")

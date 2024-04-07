@@ -74,6 +74,10 @@ https://www.digitalocean.com/community/tutorials/how-to-deploy-postgres-to-kuber
 ```Shell
 k exec -it postgres-65db968757-hqmsk -- psql -h localhost -U ps_user --password -p 5432 ps_db
 
+\c <db-name> - Connect database
+\l - List database
+\d <table-name> - Describe table
+\d+ <table-name> - More details
 ```
 
 
@@ -84,8 +88,8 @@ https://kubernetes.github.io/ingress-nginx/deploy/#minikube
 docker rmi -f $(docker images 'taaesan/table-booking-service-k8' -a -q)
 
 mvn package -Dmaven.test.skip=true 
-docker build -t taaesan/table-booking-service-k8:0.0.6 .
-docker push taaesan/table-booking-service-k8:0.0.6
+docker buildx build -t taaesan/table-booking-service-k8:0.0.13 .
+docker push taaesan/table-booking-service-k8:0.0.13
 
 docker tag taaesan/table-booking-service-k8:0.0.4 taaesan/table-booking-service-k8:latest
 

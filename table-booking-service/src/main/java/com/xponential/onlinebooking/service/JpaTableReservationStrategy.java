@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Component(value = "jpaTableReservationStrategy")
@@ -52,18 +53,19 @@ public class JpaTableReservationStrategy implements TableReservationStrategy {
         }
 
         Reservation reservation = new Reservation();
+        reservation.setId(UUID.randomUUID());
         reservationRepository.save(reservation);
 
         List<UUID> reservedTableIds = new ArrayList<>();
         for (int i = 0; i < requiredTables; i++) {
             TableModel table = availableTables.get(i);
-            reservedTableIds.add(table.getId());
             table.setReserved(true);
+            table.setReservationId(reservation.getId());
             tableRepository.save(table);
         }
 
         ReserveTableResponse response = new ReserveTableResponse();
-        response.setBookingId(UUID.randomUUID());
+        response.setBookingId(reservation.getId());
         response.setBookedTables(BigDecimal.valueOf(requiredTables));
         response.setRemainingTables(BigDecimal.valueOf(availableTables.size() - requiredTables));
         return response;
@@ -72,14 +74,17 @@ public class JpaTableReservationStrategy implements TableReservationStrategy {
     @Override
     @Transactional
     public CancelReservationResponse cancelReservation(UUID bookingId) throws BookingIDNotFoundException {
-        List<TableModel> reservedTables = tableRepository.findReservedTablesByBookingId(bookingId);
+        Optional<Reservation> reservation = reservationRepository.findById(bookingId);
 
-        if (reservedTables.isEmpty()) {
+        if (reservation.isEmpty()) {
             throw new BookingIDNotFoundException();
         }
 
+        List<TableModel> reservedTables = tableRepository.findReservedTablesByBookingId(bookingId);
+
         for (TableModel table : reservedTables) {
             table.setReserved(false);
+            table.setReservationId(null);
             tableRepository.save(table);
         }
 

@@ -9,10 +9,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.UUID;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "table_model")
 public class TableModel {
     @Id
@@ -22,33 +26,11 @@ public class TableModel {
     @Column(name = "reserved", nullable = false)
     private boolean reserved;
 
-    @ManyToOne()
-    @JoinColumn(name ="reservation_id", nullable = true)
-    private Reservation reservation;
+    @Column(name = "reservation_id", nullable = true)
+    private UUID reservationId;
 
-    // Add any other relevant fields
+//    @ManyToOne()
+//    @JoinColumn(name ="reservation_id", nullable = true)
+//    private Reservation reservation;
 
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public boolean isReserved() {
-        return reserved;
-    }
-
-    public void setReserved(boolean reserved) {
-        this.reserved = reserved;
-    }
-
-    public Reservation getReservation() {
-        return reservation;
-    }
-
-    public void setReservation(Reservation reservation) {
-        this.reservation = reservation;
-    }
 }
