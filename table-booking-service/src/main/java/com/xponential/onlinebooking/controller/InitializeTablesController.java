@@ -5,6 +5,7 @@ import com.xponential.onlinebooking.model.InitializeTablesResponse;
 import com.xponential.onlinebooking.service.TableReservationService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,7 +19,7 @@ public class InitializeTablesController implements InitializeTablesApi {
     private final TableReservationService tableReservationService;
 
     @Autowired
-    public InitializeTablesController(TableReservationService tableReservationService) {
+    public InitializeTablesController(@Qualifier("jpaTableReservationStrategy") TableReservationService tableReservationService) {
         this.tableReservationService = tableReservationService;
     }
 

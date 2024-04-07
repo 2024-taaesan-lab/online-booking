@@ -5,6 +5,7 @@ import com.xponential.onlinebooking.model.ReserveTableResponse;
 import com.xponential.onlinebooking.service.TableReservationService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,7 +18,7 @@ public class ReserveTableController implements ReserveTableApi {
     private final TableReservationService tableReservationService;
 
     @Autowired
-    public ReserveTableController(TableReservationService tableReservationService) {
+    public ReserveTableController(@Qualifier("jpaTableReservationStrategy") TableReservationService tableReservationService) {
         this.tableReservationService = tableReservationService;
     }
     @Override
