@@ -7,6 +7,7 @@ import com.xponential.onlinebooking.model.NotEnoughTablesForAllCustomersExceptio
 import com.xponential.onlinebooking.model.ReserveTableResponse;
 import com.xponential.onlinebooking.model.TablesAlreadyInitializedException;
 import com.xponential.onlinebooking.model.TablesNotInitializedException;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -17,7 +18,7 @@ public class TableReservationService {
     private TableReservationStrategy reservationStrategy;
     private boolean initialized = false;
 
-    public TableReservationService(TableReservationStrategy reservationStrategy) {
+    public TableReservationService(@Qualifier("jpaTableReservationStrategy") TableReservationStrategy reservationStrategy) {
         this.reservationStrategy = reservationStrategy;
     }
 

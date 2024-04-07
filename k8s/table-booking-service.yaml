@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: table-booking-service-k8
-          image: taaesan/table-booking-service-k8:0.0.1
+          image: taaesan/table-booking-service-k8:0.0.6
           ports:
             - containerPort: 8080
 ---

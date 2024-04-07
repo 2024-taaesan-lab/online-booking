@@ -18,7 +18,7 @@ public class CancelReservationController implements CancelReservationApi {
     private final TableReservationService tableReservationService;
 
     @Autowired
-    public CancelReservationController(@Qualifier("jpaTableReservationStrategy") TableReservationService tableReservationService) {
+    public CancelReservationController(TableReservationService tableReservationService) {
         this.tableReservationService = tableReservationService;
     }
     @Override

@@ -1,18 +1,22 @@
 package com.xponential.onlinebooking.repository;
 
-import com.xponential.onlinebooking.model.Table;
+import com.xponential.onlinebooking.model.TableModel;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface TableRepository extends JpaRepository<Table, UUID> {
-    List<Table> findAvailableTables();
+public interface TableRepository extends JpaRepository<TableModel, UUID> {
+    @Query("SELECT u FROM TableModel u WHERE u.reserved = false")
+    List<TableModel> findAvailableTables();
 
-    List<Table> findReservedTablesByBookingId(UUID bookingId);
+    @Query("SELECT u FROM TableModel u WHERE u.reservation_id = :bookingId")
+    List<TableModel> findReservedTablesByBookingId(@Param("bookingId") UUID bookingId);
 
-    long countReservedTables(boolean b);
-    // Add custom query methods if needed
+    @Query("SELECT COUNT(u) FROM TableModel u WHERE u.reserved = :reserved")
+    long countReservedTables(@Param("reserved") boolean b);
 }

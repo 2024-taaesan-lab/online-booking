@@ -19,7 +19,7 @@ public class InitializeTablesController implements InitializeTablesApi {
     private final TableReservationService tableReservationService;
 
     @Autowired
-    public InitializeTablesController(@Qualifier("jpaTableReservationStrategy") TableReservationService tableReservationService) {
+    public InitializeTablesController(TableReservationService tableReservationService) {
         this.tableReservationService = tableReservationService;
     }
 

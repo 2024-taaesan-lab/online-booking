@@ -1,0 +1,27 @@
+###
+POST http://192.168.49.2/api/api/v1/initializeTables
+Content-Type: application/json
+
+{
+  "numberOfTables": 2
+}
+
+
+###
+POST http://192.168.49.2/api/v1/reserveTable
+Content-Type: application/json
+
+{
+  "numberOfCustomers": 3
+}
+
+
+
+
+###
+POST http://192.168.49.2/api/v1/cancelReservation
+Content-Type: application/json
+
+{
+  "bookingId": "a82bb103-5778-4435-ba7a-91ce16602880"
+}

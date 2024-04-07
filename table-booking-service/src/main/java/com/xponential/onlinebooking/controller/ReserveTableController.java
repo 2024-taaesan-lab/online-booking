@@ -18,7 +18,7 @@ public class ReserveTableController implements ReserveTableApi {
     private final TableReservationService tableReservationService;
 
     @Autowired
-    public ReserveTableController(@Qualifier("jpaTableReservationStrategy") TableReservationService tableReservationService) {
+    public ReserveTableController(TableReservationService tableReservationService) {
         this.tableReservationService = tableReservationService;
     }
     @Override
