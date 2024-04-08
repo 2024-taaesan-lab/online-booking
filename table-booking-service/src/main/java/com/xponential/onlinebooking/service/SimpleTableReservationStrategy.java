@@ -1,4 +1,5 @@
 package com.xponential.onlinebooking.service;
+
 import com.xponential.onlinebooking.model.BookingIDNotFoundException;
 import com.xponential.onlinebooking.model.CancelReservationResponse;
 import com.xponential.onlinebooking.model.InitializeTablesResponse;
@@ -13,21 +14,33 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Service component for simple table reservation strategy.
+ */
 @Component(value = "simpleTableReservationStrategy")
 public class SimpleTableReservationStrategy implements TableReservationStrategy {
 
+    /** Number of seats per table */
     public static final int SEAT_PER_TABLE = 4;
 
-    private Deque<UUID> availableTables;
-    private Deque<UUID> reservedTables;
-    private Map<UUID, Deque> reservedTableMap;
+    private Deque<UUID> availableTables; // Queue to store available tables
+    private Deque<UUID> reservedTables; // Queue to store reserved tables
+    private Map<UUID, Deque<UUID>> reservedTableMap; // Map to store reservation details
 
+    /**
+     * Constructs a SimpleTableReservationStrategy instance.
+     */
     public SimpleTableReservationStrategy(){
         this.availableTables = new ArrayDeque<>();
         this.reservedTables = new ArrayDeque<>();
         this.reservedTableMap = new HashMap<>();
     }
 
+    /**
+     * Initializes the specified number of tables.
+     * @param numberOfTables The number of tables to initialize.
+     * @return Response containing the number of tables initialized.
+     */
     @Override
     public InitializeTablesResponse initializeTables(int numberOfTables) {
         for (int i = 0; i < numberOfTables; i++) {
@@ -38,6 +51,12 @@ public class SimpleTableReservationStrategy implements TableReservationStrategy 
         return response;
     }
 
+    /**
+     * Reserves tables for the specified number of customers.
+     * @param numberOfCustomers The number of customers for whom tables need to be reserved.
+     * @return Response containing booking details.
+     * @throws NotEnoughTablesForAllCustomersException if there are not enough tables to accommodate all customers.
+     */
     @Override
     public ReserveTableResponse reserveTables(int numberOfCustomers) throws NotEnoughTablesForAllCustomersException {
         int requiredTables = (int) Math.ceil((double) numberOfCustomers / SEAT_PER_TABLE);
@@ -49,8 +68,8 @@ public class SimpleTableReservationStrategy implements TableReservationStrategy 
         UUID bookingId = UUID.randomUUID();
 
         for(int i = requiredTables; i > 0; i--) {
-            UUID table = availableTables.pollFirst();
-            reservedTables.add(table);
+            UUID table = availableTables.pollFirst(); // Remove first available table
+            reservedTables.add(table); // Add reserved table
         }
 
         // Save bookingId for reserved tables
@@ -63,20 +82,26 @@ public class SimpleTableReservationStrategy implements TableReservationStrategy 
         return response;
     }
 
+    /**
+     * Cancels a reservation identified by the given booking ID.
+     * @param bookingId The booking ID of the reservation to cancel.
+     * @return Response containing cancellation details.
+     * @throws BookingIDNotFoundException if the booking ID is not found.
+     */
     @Override
     public CancelReservationResponse cancelReservation(UUID bookingId) throws BookingIDNotFoundException {
-        Deque<UUID> reservedTables = reservedTableMap.remove(bookingId);
+        Deque<UUID> reservedTables = reservedTableMap.remove(bookingId); // Remove reservation details
 
         if (reservedTables == null) {
             throw new BookingIDNotFoundException();
         }
 
-        availableTables.addAll(reservedTables);
-        reservedTables.clear();
+        availableTables.addAll(reservedTables); // Make reserved tables available again
+        reservedTables.clear(); // Clear reserved tables
 
         CancelReservationResponse response = new CancelReservationResponse();
-        response.setBookedTables(BigDecimal.valueOf(reservedTables.size()));
-        response.setRemainingTables(BigDecimal.valueOf(availableTables.size()));
+        response.setBookedTables(BigDecimal.valueOf(reservedTables.size())); // No. of canceled tables
+        response.setRemainingTables(BigDecimal.valueOf(availableTables.size())); // No. of available tables
         return response;
     }
 }

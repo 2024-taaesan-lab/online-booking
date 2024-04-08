@@ -19,9 +19,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Service implementation for handling table reservations using a database-backed strategy.
+ */
 @Component(value = "jpaTableReservationStrategy")
 public class DatabaseTableReservationStrategy implements TableReservationStrategy {
 
+    /** Number of seats per table */
     public static final int SEAT_PER_TABLE = 4;
 
     @Autowired
@@ -30,6 +34,11 @@ public class DatabaseTableReservationStrategy implements TableReservationStrateg
     @Autowired
     private ReservationRepository reservationRepository;
 
+    /**
+     * Initializes the specified number of tables.
+     * @param numberOfTables The number of tables to initialize.
+     * @return Response containing the number of tables initialized.
+     */
     @Override
     @Async
     public InitializeTablesResponse initializeTables(int numberOfTables) {
@@ -47,6 +56,12 @@ public class DatabaseTableReservationStrategy implements TableReservationStrateg
         return response;
     }
 
+    /**
+     * Reserves tables for the specified number of customers.
+     * @param numberOfCustomers The number of customers for whom tables need to be reserved.
+     * @return Response containing booking details.
+     * @throws NotEnoughTablesForAllCustomersException if there are not enough tables to accommodate all customers.
+     */
     @Override
     @Transactional
     @Async
@@ -78,6 +93,12 @@ public class DatabaseTableReservationStrategy implements TableReservationStrateg
         return response;
     }
 
+    /**
+     * Cancels a reservation identified by the given booking ID.
+     * @param bookingId The booking ID of the reservation to cancel.
+     * @return Response containing cancellation details.
+     * @throws BookingIDNotFoundException if the booking ID is not found.
+     */
     @Override
     @Async
     public CancelReservationResponse cancelReservation(UUID bookingId) throws BookingIDNotFoundException {

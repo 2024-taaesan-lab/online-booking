@@ -9,6 +9,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.UUID;
+
+/**
+ * Entity class representing a reservation in the system.
+ */
 @Entity
 @Getter
 @Setter
@@ -21,6 +25,7 @@ public class Reservation {
     @Column(name = "reservation_id", nullable = false)
     private String reservationId;
 
-//    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "reservation")
-//    private List<TableModel> tables;
+    // Uncomment and modify as needed if there's a relationship with TableModel
+    // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "reservation")
+    // private List<TableModel> tables;
 }
