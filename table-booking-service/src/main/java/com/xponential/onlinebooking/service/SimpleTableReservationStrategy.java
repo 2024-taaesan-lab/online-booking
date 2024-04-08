@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-@Component
+@Component(value = "simpleTableReservationStrategy")
 public class SimpleTableReservationStrategy implements TableReservationStrategy {
 
     public static final int SEAT_PER_TABLE = 4;

@@ -51,7 +51,7 @@ mvn spring-boot:run
 http://localhost:8080/swagger-ui/index.html  
 
 
-----
+---
 ### APIs Contract
 
 | Operation  | Resource | HTTP Verb | Success Code | Error Code |
@@ -60,8 +60,74 @@ http://localhost:8080/swagger-ui/index.html
 | Reserve Tables | /reserveTable | POST | 200  | 400 - Not enough tables for all customers <br>  503 - Not enough tables for all customers | 
 | Cancel Reservation | /cancelReservation | POST | 200  | 404 - Booking ID not found | 
 
-### Service Layer
 
-![Strategy](./resources/X8.jpg)
+## Kubernetes Instructions  
 
+![Kubernetest](./resources/X10.jpg)
+
+### Required Software
+- Minikube https://minikube.sigs.k8s.io/docs/start/
+- Kubctl https://kubernetes.io/docs/tasks/tools/
+- Helm https://github.com/helm/helm/releases
+- K6 https://k6.io/docs/get-started/installation/
+- Ingress https://kubernetes.github.io/ingress-nginx/deploy/#minikube
+
+### Usage
+
+1. Ensure successful execution of the following commands:
+```Shell
+minikube start  
+minikube addons enable ingress  
+minikube addons list 
+|ingress| minikube | enabled ✅| Kubernetes|
+```
+2. Execute the following commands to set up the Postgres cluster:
+
+```Shell
+kubectl apply -f k8s/postgres-configmap.yaml
+kubectl apply -f k8s/postgres-volumn.yaml
+kubectl apply -f k8s/postgres-deployment.yaml
+```
+
+3. Deploy the application by executing the following commands:
+```Shell
+kubectl apply -f k8s/table-booking-service.yaml
+kubectl apply -f k8s/ingress.yaml
+```
+
+## Miscellaneous
+
+### Prostgres on K8
+https://www.digitalocean.com/community/tutorials/how-to-deploy-postgres-to-kubernetes-cluster
+
+
+```Shell
+k exec -it postgres-65db968757-hqmsk -- psql -h localhost -U ps_user --password -p 5432 ps_db
+
+\c <db-name> - Connect database
+\l - List database
+\d <table-name> - Describe table
+\d+ <table-name> - More details
+```
+
+Install ingress controller (Minikube)
+https://kubernetes.github.io/ingress-nginx/deploy/#minikube
+
+```Shell
+docker rmi -f $(docker images 'taaesan/table-booking-service-k8' -a -q)
+
+mvn package -Dmaven.test.skip=true 
+docker buildx build -t taaesan/table-booking-service-k8:latest .
+docker push taaesan/table-booking-service-k8:latest
+
+k roll out restart deployment 
+
+docker tag taaesan/table-booking-service-k8:0.0.4 taaesan/table-booking-service-k8:latest
+
+docker push taaesan/table-booking-service-k8:0.0.5
+docker push taaesan/table-booking-service-k8:latest
+```
+
+### Load Test
+`k6 run k6/script.k8s.js`  
 
