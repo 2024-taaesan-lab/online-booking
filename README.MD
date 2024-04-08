@@ -12,6 +12,17 @@ This project addresses the challenge of online table booking for restaurants. It
 
 ![Online Booking Application](./resources/K7.gif)
 
+## Folder Structure
+- **client**: This directory contains client scripts for the Rest Client plugin in Visual Studio Code. These scripts may be used for testing RESTful APIs or making HTTP requests.
+
+- **k6**: This directory contains testing scripts for load testing using the k6 library. k6 is a modern load testing tool that allows you to write and execute performance tests in JavaScript.
+
+- **k8s**: This directory contains Kubernetes configuration files. These files define the deployment, service, and other resources required for deploying and managing the online booking application in a Kubernetes cluster.
+
+- **resources**: This directory contains miscellaneous resources related to the project. It may include documentation, design assets, or any other project-related materials.
+
+- **table-booking-service**: This directory contains the backend service code for the online booking application. The backend service is written in Java with the Spring Boot framework. It includes server-side code, configuration files, tests, and other related resources specific to the table booking service.
+
 ## Docker Instructions
 
 ### Required Software
