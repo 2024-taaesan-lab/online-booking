@@ -1,13 +1,17 @@
 # Online Booking Application
 
 ## Overview
-This project addresses the challenge of online table booking for restaurants. It begins with a meticulous outlining of requirements and the design of an API. Leveraging open APIs, a basic version is created, followed by the integration of a code generator to expedite development. Test-Driven Development (TDD) principles are applied to ensure smooth operation and appropriate testing.
+
+For this project, there are three types of instructions: Docker, Maven, and Kubernetes.
+The simplest method to run this project requires only the Docker engine, as I have already built and packaged the software on Docker Hub.
+
+For Maven, it is necessary to execute Maven commands.
+
+Setting up Kubernetes is the most complex process, but it provides the ability to manage multiple containers to handle heavier workloads.
 
 ## Key Features
 - API-First Approach: The development process prioritizes API design, fostering collaboration between designers and developers while streamlining workflow.
-
 - Parallel Development: The API-first methodology enables simultaneous work by designers and developers, enhancing efficiency and reducing time-to-market.
-
 - Robust Documentation: OpenAPI documentation is provided for clear understanding and seamless integration of the application.
 
 ![Online Booking Application](./resources/K7.gif)
