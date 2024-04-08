@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: table-booking-service-k8-deployment
+  name: tbs-deployment
 spec:
   replicas: 1
   selector:

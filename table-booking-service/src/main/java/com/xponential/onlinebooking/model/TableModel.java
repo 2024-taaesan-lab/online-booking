@@ -23,9 +23,6 @@ public class TableModel {
     @GeneratedValue
     private int id;
 
-    @Column(name = "table_key", nullable = false)
-    private String tableKey;
-
     @Column(name = "reserved", nullable = false)
     private boolean reserved;
 
