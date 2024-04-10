@@ -110,6 +110,30 @@ kubectl apply -f k8s/table-booking-service.yaml
 kubectl apply -f k8s/ingress.yaml
 ```
 
+## Asynchronous Call Performance Optimization
+
+There's significant potential to enhance speed, especially leveraging tools like Node.js designed for concurrent task handling. Within Java Spring, customizing task handling enables certain tasks to run in the background.
+
+Let's compare the duration for the /initializeTables endpoint:
+
+Before: it took 1232 milliseconds.
+```Shell
+2024-04-09T23:20:45.377Z  INFO 1 --- [online-booking] [nio-8080-exec-1] c.x.o.c.InitializeTablesController       : The current Thread is : http-nio-8080-exec-1
+2024-04-09T23:20:45.378Z  INFO 1 --- [online-booking] [nio-8080-exec-1] c.x.o.c.InitializeTablesController       : Elapsed time: 1232
+
+```
+
+After: it took only 5 milliseconds.
+```Shell
+2024-04-09T23:38:00.859Z  INFO 1 --- [online-booking] [nio-8080-exec-1] c.x.o.c.InitializeTablesController       : The current Thread is : http-nio-8080-exec-1
+2024-04-09T23:38:00.859Z  INFO 1 --- [online-booking] [nio-8080-exec-1] c.x.o.c.InitializeTablesController       : Elapsed time: 5
+```
+
+Here's the difference:
+
+That's a staggering **99.6% improvement!** This significant boost in performance was achieved by optimizing the system to utilize asynchronous calls, resulting in a remarkably faster initialization process for the database tables.
+
+
 ## Miscellaneous
 
 ### Prostgres on K8
@@ -145,4 +169,7 @@ docker push taaesan/table-booking-service-k8:latest
 
 ### Load Test
 `k6 run k6/script.k8s.js`  
+
+
+
 

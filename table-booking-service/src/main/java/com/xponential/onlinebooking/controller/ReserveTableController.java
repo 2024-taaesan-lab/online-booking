@@ -4,6 +4,8 @@ import com.xponential.onlinebooking.model.ReserveTableDTO;
 import com.xponential.onlinebooking.model.ReserveTableResponse;
 import com.xponential.onlinebooking.service.TableReservationService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1")
 public class ReserveTableController implements ReserveTableApi {
+
+    private static final Logger logger = LoggerFactory.getLogger(ReserveTableController.class);
     private final TableReservationService tableReservationService;
 
     /**
@@ -37,6 +41,10 @@ public class ReserveTableController implements ReserveTableApi {
     @Override
     @PostMapping("/reserveTable")
     public ResponseEntity<ReserveTableResponse> reserveTables(@Valid @RequestBody ReserveTableDTO reserveTableDTO) {
-        return ResponseEntity.ok(tableReservationService.reserveTables(reserveTableDTO.getNumberOfCustomers().intValue()));
+        long start = System.currentTimeMillis();
+        ResponseEntity<ReserveTableResponse> resp = ResponseEntity.ok(tableReservationService.reserveTables(reserveTableDTO.getNumberOfCustomers().intValue()));
+        logger.info("The current Thread is : "+Thread.currentThread().getName());
+        logger.info("Elapsed time: " + (System.currentTimeMillis() - start));
+        return resp;
     }
 }
