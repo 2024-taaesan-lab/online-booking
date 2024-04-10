@@ -112,7 +112,7 @@ kubectl apply -f k8s/ingress.yaml
 
 ## Asynchronous Call Performance Optimization
 
-There's significant potential to enhance speed, especially leveraging tools like Node.js designed for concurrent task handling. Within Java Spring, customizing task handling enables certain tasks to run in the background.
+There's significant potential for improving speed within Java Spring by customizing task handling, which allows certain tasks to be executed in the background.
 
 Let's compare the duration for the /initializeTables endpoint:
 
