@@ -7,13 +7,15 @@ import com.xponential.onlinebooking.model.NotEnoughTablesForAllCustomersExceptio
 import com.xponential.onlinebooking.model.Reservation;
 import com.xponential.onlinebooking.model.ReserveTableResponse;
 import com.xponential.onlinebooking.model.TableModel;
-import com.xponential.onlinebooking.repository.ReservationRepository;
-import com.xponential.onlinebooking.repository.TableRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,18 +24,23 @@ import java.util.UUID;
  */
 @Component(value = "jpaTableReservationStrategy")
 public class DatabaseTableReservationStrategy implements TableReservationStrategy {
+    private static final Logger logger = LoggerFactory.getLogger(DatabaseTableReservationStrategy.class);
 
     /** Number of seats per table */
     public static final int SEAT_PER_TABLE = 4;
 
-    @Autowired
-    private TableRepository tableRepository;
+    //@Autowired
+    //private TableRepository tableRepository;
 
-    @Autowired
-    private ReservationRepository reservationRepository;
+    //@Autowired
+    //private ReservationRepository reservationRepository;
 
     @Autowired
     private AsyncCallsWrapper asyncCallWrapper;
+
+
+    @Autowired
+    private EntityManager entityManager;
 
     /**
      * Initializes the specified number of tables.
@@ -43,6 +50,7 @@ public class DatabaseTableReservationStrategy implements TableReservationStrateg
     @Override
     public InitializeTablesResponse initializeTables(int numberOfTables) {
 
+        logger.info("entityManager: "+entityManager);
         /* Sync call */
 //        List<TableModel> tables = new ArrayList<>();
 //        for (int i = 0; i < numberOfTables; i++) {
@@ -67,7 +75,32 @@ public class DatabaseTableReservationStrategy implements TableReservationStrateg
      * @throws NotEnoughTablesForAllCustomersException if there are not enough tables to accommodate all customers.
      */
     @Override
+    @Transactional
     public ReserveTableResponse reserveTables(int numberOfCustomers) throws NotEnoughTablesForAllCustomersException {
+
+        logger.info("Counting table");
+        TypedQuery<TableModel> query = entityManager.createQuery("SELECT t FROM TableModel t WHERE t.reservation IS NULL", TableModel.class);
+
+        List<TableModel> availableTables = query.getResultList();
+        logger.info("availableTables: "+availableTables.size());
+        int requiredTables = (int) Math.ceil((double) numberOfCustomers / SEAT_PER_TABLE);
+        logger.info("requiredTables: "+requiredTables);
+        if (requiredTables > availableTables.size()) {
+            throw new NotEnoughTablesForAllCustomersException();
+        }
+
+        Reservation reservation = new Reservation();
+        reservation.setFirstName(UUID.randomUUID().toString());
+
+        for (int i = 0; i < requiredTables; i++) {
+            TableModel table = availableTables.get(i);
+            reservation.add(table);
+        }
+
+        entityManager.persist(reservation);
+
+
+/*
         List<TableModel> availableTables = tableRepository.findAvailableTables();
         int requiredTables = (int) Math.ceil((double) numberOfCustomers / SEAT_PER_TABLE);
 
@@ -76,7 +109,7 @@ public class DatabaseTableReservationStrategy implements TableReservationStrateg
         }
         Reservation reservation = new Reservation();
         reservation.setReservationId(UUID.randomUUID().toString());
-
+*/
         /* Sync call */
 //        reservationRepository.save(reservation);
 //        List<TableModel> reservedTables = new ArrayList<>();
@@ -89,10 +122,10 @@ public class DatabaseTableReservationStrategy implements TableReservationStrateg
 //        tableRepository.saveAll(reservedTables);
 
         //Async Call
-        asyncCallWrapper.reserveTablesAsync(requiredTables, availableTables, reservation);
+        //asyncCallWrapper.reserveTablesAsync(requiredTables, availableTables, reservation);
 
         ReserveTableResponse response = new ReserveTableResponse();
-        response.setBookingId(UUID.fromString(reservation.getReservationId()));
+        response.setBookingId(UUID.fromString(reservation.getFirstName()));
         response.setBookedTables(BigDecimal.valueOf(requiredTables));
         response.setRemainingTables(BigDecimal.valueOf(availableTables.size() - requiredTables));
         return response;
@@ -106,6 +139,7 @@ public class DatabaseTableReservationStrategy implements TableReservationStrateg
      */
     @Override
     public CancelReservationResponse cancelReservation(UUID bookingId) throws BookingIDNotFoundException {
+        /*
         List<Reservation> reservation = reservationRepository.findReservationByReservationId(bookingId.toString());
 
         if (reservation == null || reservation.isEmpty()) {
@@ -116,14 +150,11 @@ public class DatabaseTableReservationStrategy implements TableReservationStrateg
 
         List<TableModel> freeTables = new ArrayList<>();
         for (TableModel table : reservedTables) {
-            table.setReserved(false);
-            table.setReservationId(null);
+            //table.setReserved(false);
+            //table.setReservationId(null);
             freeTables.add(table);
         }
 
-        /* Sync call */
-//        tableRepository.saveAll(freeTables);
-//        reservationRepository.delete(reservation.get(0));
 
         //Async Call
         asyncCallWrapper.cancelReservationAsync(freeTables, reservation.get(0));
@@ -133,5 +164,8 @@ public class DatabaseTableReservationStrategy implements TableReservationStrateg
         response.setBookedTables(BigDecimal.valueOf(reservedTables.size()));
         response.setRemainingTables(BigDecimal.valueOf(tableRepository.countReservedTables(false)));
         return response;
+
+         */
+        return null;
     }
 }

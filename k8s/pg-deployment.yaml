@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: 'postgres:16'
+          image: taaesan/postgres-table-booking:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5432
@@ -28,6 +28,7 @@ spec:
         - name: postgresdata
           persistentVolumeClaim:
             claimName: postgres-volume-claim
+
 ---
 apiVersion: v1
 kind: Service

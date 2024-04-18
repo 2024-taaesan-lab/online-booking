@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgresql-initdb-config
+data:
+  init.sql: |
+    CREATE TABLE reservation (
+      id SERIAL PRIMARY KEY,
+      first_name VARCHAR(45),
+      last_name VARCHAR(45),
+      email VARCHAR(45),
+      phone_number VARCHAR(45),
+      table_id INT,
+      CONSTRAINT fk_table_id FOREIGN KEY (table_id) REFERENCES "table" (id) ON DELETE NO ACTION ON UPDATE NO ACTION
+    );
+
+    CREATE TABLE table_model (
+      id SERIAL PRIMARY KEY,
+      title VARCHAR(128) UNIQUE,
+      reservation_id INT,
+      CONSTRAINT fk_reservation_id FOREIGN KEY (reservation_id) REFERENCES reservation (id) ON DELETE NO ACTION ON UPDATE NO ACTION
+    );

@@ -3,7 +3,7 @@ POST http://192.168.49.2/api/v1/initializeTables
 Content-Type: application/json
 
 {
-  "numberOfTables": 5000
+  "numberOfTables": 10
 }
 
 
@@ -12,7 +12,7 @@ POST http://192.168.49.2/api/v1/reserveTable
 Content-Type: application/json
 
 {
-  "numberOfCustomers": 500
+  "numberOfCustomers": 20
 }
 
 

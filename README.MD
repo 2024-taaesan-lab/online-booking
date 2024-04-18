@@ -141,7 +141,7 @@ https://www.digitalocean.com/community/tutorials/how-to-deploy-postgres-to-kuber
 
 
 ```Shell
-k exec -it postgres-65db968757-hqmsk -- psql -h localhost -U ps_user --password -p 5432 ps_db
+k exec -it postgres-588b6d4dd8-cx28p -- psql -h localhost -U ps_user --password -p 5432 ps_db
 
 \c <db-name> - Connect database
 \l - List database
@@ -156,8 +156,8 @@ https://kubernetes.github.io/ingress-nginx/deploy/#minikube
 docker rmi -f $(docker images 'taaesan/table-booking-service-k8' -a -q)
 
 mvn package -Dmaven.test.skip=true 
-docker buildx build -t taaesan/table-booking-service-k8:latest .
-docker push taaesan/table-booking-service-k8:latest
+docker buildx build -t taaesan/table-booking-service-k8:14 .
+docker push taaesan/table-booking-service-k8:0.0.14
 
 k roll out restart deployment 
 
@@ -169,6 +169,17 @@ docker push taaesan/table-booking-service-k8:latest
 
 ### Load Test
 `k6 run k6/script.k8s.js`  
+
+
+
+docker buildx build -t taaesan/postgres-table-booking:latest db/
+
+docker run --name pg-test -p 5432:5432 -e POSTGRES_USER=ps_user -e POSTGRES_PASSWORD=p@ssw0rd -e POSTGRES_DB=ps_db taaesan/postgres-table-booking:latest
+
+
+docker exec -it pg-test psql -U ps_user -d ps_db
+
+k exec -it postgres-588b6d4dd8-8mz8h -- psql -h localhost -U ps_user --password -p 5432 ps_db
 
 
 

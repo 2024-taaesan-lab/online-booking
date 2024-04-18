@@ -2,37 +2,43 @@ package com.xponential.onlinebooking.service;
 
 import com.xponential.onlinebooking.model.Reservation;
 import com.xponential.onlinebooking.model.TableModel;
-import com.xponential.onlinebooking.repository.ReservationRepository;
-import com.xponential.onlinebooking.repository.TableRepository;
+import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
 public class AsyncCallsWrapper {
 
-    @Autowired
-    private TableRepository tableRepository;
+    //@Autowired
+    //private TableRepository tableRepository;
 
     @Autowired
-    private ReservationRepository reservationRepository;
+    private EntityManager entityManager;
+
+    //@Autowired
+    //private ReservationRepository reservationRepository;
 
     @Async(value = "customTableExecutor")
+    @Transactional
     public void initializeTablesAsync(int numberOfTables){
-        List<TableModel> tables = new ArrayList<>();
+        entityManager.getTransaction().begin();
+
         for (int i = 0; i < numberOfTables; i++) {
             TableModel table = new TableModel();
-            tables.add(table);
+            table.setTitle("T"+(i+1));
+            entityManager.persist(table);
         }
 
-        tableRepository.saveAll(tables);
+        entityManager.getTransaction().commit();
     }
 
     @Async(value = "customTableExecutor")
     public void reserveTablesAsync(int requiredTables, List<TableModel> availableTables, Reservation reservation){
+        /*
         reservationRepository.save(reservation);
 
         List<TableModel> reservedTables = new ArrayList<>();
@@ -43,12 +49,14 @@ public class AsyncCallsWrapper {
             reservedTables.add(table);
         }
         tableRepository.saveAll(reservedTables);
+
+         */
     }
 
     @Async(value = "customTableExecutor")
     public void cancelReservationAsync(List<TableModel> freeTables, Reservation reservation){
-        tableRepository.saveAll(freeTables);
+        //tableRepository.saveAll(freeTables);
 
-        reservationRepository.delete(reservation);
+        //reservationRepository.delete(reservation);
     }
 }
