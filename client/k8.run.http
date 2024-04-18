@@ -12,7 +12,7 @@ POST http://192.168.49.2/api/v1/reserveTable
 Content-Type: application/json
 
 {
-  "numberOfCustomers": 20
+  "numberOfCustomers": 2
 }
 
 
@@ -23,5 +23,5 @@ POST http://192.168.49.2/api/v1/cancelReservation
 Content-Type: application/json
 
 {
-  "bookingId": "c1b5b695-9bbc-41d6-b0db-7036222aa1b7"
+  "bookingId": "b1d9a964-9f79-4166-bb42-f8085592eee4"
 }

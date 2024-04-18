@@ -1,1 +1,1 @@
-mvn package -Dmaven.test.skip=true && docker buildx build -t taaesan/table-booking-service-k8:0.0.16 .
+mvn package -Dmaven.test.skip=true && docker buildx build -t taaesan/table-booking-service-k8:0.0.29 . && docker push taaesan/table-booking-service-k8:0.0.29

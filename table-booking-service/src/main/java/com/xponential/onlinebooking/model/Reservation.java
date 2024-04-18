@@ -3,6 +3,7 @@ package com.xponential.onlinebooking.model;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -20,7 +21,11 @@ import java.util.List;
 public class Reservation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
+
+    @Column(name = "booking_id")
+    private String bookingId;
 
     @Column(name = "first_name")
     private String firstName;
@@ -33,6 +38,7 @@ public class Reservation {
 
 
     @OneToMany(mappedBy = "reservation",
+            fetch = FetchType.LAZY,
             cascade = {
                     CascadeType.DETACH,
                     CascadeType.MERGE,
@@ -88,6 +94,14 @@ public class Reservation {
 
     public void setTables(List<TableModel> tables) {
         this.tables = tables;
+    }
+
+    public String getBookingId() {
+        return bookingId;
+    }
+
+    public void setBookingId(String bookinId) {
+        this.bookingId = bookinId;
     }
 
     @Override

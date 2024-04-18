@@ -29,16 +29,6 @@ public class DatabaseTableReservationStrategy implements TableReservationStrateg
     /** Number of seats per table */
     public static final int SEAT_PER_TABLE = 4;
 
-    //@Autowired
-    //private TableRepository tableRepository;
-
-    //@Autowired
-    //private ReservationRepository reservationRepository;
-
-    @Autowired
-    private AsyncCallsWrapper asyncCallWrapper;
-
-
     @Autowired
     private EntityManager entityManager;
 
@@ -48,20 +38,16 @@ public class DatabaseTableReservationStrategy implements TableReservationStrateg
      * @return Response containing the number of tables initialized.
      */
     @Override
+    @Transactional
     public InitializeTablesResponse initializeTables(int numberOfTables) {
 
         logger.info("entityManager: "+entityManager);
-        /* Sync call */
-//        List<TableModel> tables = new ArrayList<>();
-//        for (int i = 0; i < numberOfTables; i++) {
-//            TableModel table = new TableModel();
-//            tables.add(table);
-//        }
-//        tableRepository.saveAll(tables);
 
-        //Async call
-        asyncCallWrapper.initializeTablesAsync(numberOfTables);
-
+        for (int i = 0; i < numberOfTables; i++) {
+            TableModel table = new TableModel();
+            table.setTitle("T"+(i+1));
+            entityManager.persist(table);
+        }
 
         InitializeTablesResponse response = new InitializeTablesResponse();
         response.setNumberOfTables(BigDecimal.valueOf(numberOfTables));
@@ -90,7 +76,7 @@ public class DatabaseTableReservationStrategy implements TableReservationStrateg
         }
 
         Reservation reservation = new Reservation();
-        reservation.setFirstName(UUID.randomUUID().toString());
+        reservation.setBookingId(UUID.randomUUID().toString());
 
         for (int i = 0; i < requiredTables; i++) {
             TableModel table = availableTables.get(i);
@@ -100,32 +86,11 @@ public class DatabaseTableReservationStrategy implements TableReservationStrateg
         entityManager.persist(reservation);
 
 
-/*
-        List<TableModel> availableTables = tableRepository.findAvailableTables();
-        int requiredTables = (int) Math.ceil((double) numberOfCustomers / SEAT_PER_TABLE);
-
-        if (requiredTables > availableTables.size()) {
-            throw new NotEnoughTablesForAllCustomersException();
-        }
-        Reservation reservation = new Reservation();
-        reservation.setReservationId(UUID.randomUUID().toString());
-*/
-        /* Sync call */
-//        reservationRepository.save(reservation);
-//        List<TableModel> reservedTables = new ArrayList<>();
-//        for (int i = 0; i < requiredTables; i++) {
-//            TableModel table = availableTables.get(i);
-//            table.setReserved(true);
-//            table.setReservationId(reservation.getReservationId());
-//            reservedTables.add(table);
-//        }
-//        tableRepository.saveAll(reservedTables);
-
         //Async Call
         //asyncCallWrapper.reserveTablesAsync(requiredTables, availableTables, reservation);
 
         ReserveTableResponse response = new ReserveTableResponse();
-        response.setBookingId(UUID.fromString(reservation.getFirstName()));
+        response.setBookingId(UUID.fromString(reservation.getBookingId()));
         response.setBookedTables(BigDecimal.valueOf(requiredTables));
         response.setRemainingTables(BigDecimal.valueOf(availableTables.size() - requiredTables));
         return response;
@@ -138,34 +103,45 @@ public class DatabaseTableReservationStrategy implements TableReservationStrateg
      * @throws BookingIDNotFoundException if the booking ID is not found.
      */
     @Override
+    @Transactional
     public CancelReservationResponse cancelReservation(UUID bookingId) throws BookingIDNotFoundException {
-        /*
-        List<Reservation> reservation = reservationRepository.findReservationByReservationId(bookingId.toString());
+        logger.info("---");
+        logger.info("Finding reservation by bookingId: "+ bookingId.toString());
+        TypedQuery<Reservation> query = entityManager.createQuery("""
+                SELECT l FROM Reservation l
+                JOIN FETCH l.tables
+                WHERE l.bookingId = :id
+                """, Reservation.class);
+        query.setParameter("id", bookingId.toString());
+        List<Reservation> reservationList = query.getResultList();
 
-        if (reservation == null || reservation.isEmpty()) {
+        if (reservationList == null || reservationList.isEmpty()){
             throw new BookingIDNotFoundException();
         }
+        logger.info("Reservation Size: "+reservationList.size());
 
-        List<TableModel> reservedTables = tableRepository.findReservedTablesByBookingId(bookingId.toString());
-
-        List<TableModel> freeTables = new ArrayList<>();
-        for (TableModel table : reservedTables) {
-            //table.setReserved(false);
-            //table.setReservationId(null);
-            freeTables.add(table);
+        logger.info("Break relationship with tables");
+        Reservation reservation = reservationList.get(0);
+        List<TableModel> tables = reservationList.get(0).getTables();
+        for (TableModel item: tables){
+            item.setReservation(null);
+            entityManager.persist(item);
         }
+        logger.info("Removing reservation: "+ reservation.getId());
+        entityManager.remove(reservation);
+        logger.info("Done!!!");
 
-
-        //Async Call
-        asyncCallWrapper.cancelReservationAsync(freeTables, reservation.get(0));
+        TypedQuery<TableModel> query2 = entityManager.createQuery("SELECT t FROM TableModel t WHERE t.reservation IS NULL", TableModel.class);
+        TypedQuery<TableModel> query3 = entityManager.createQuery("SELECT t FROM TableModel t WHERE t.reservation IS NOT NULL", TableModel.class);
+        List<TableModel> availableTables = query2.getResultList();
+        List<TableModel> reservedTables = query3.getResultList();
 
 
         CancelReservationResponse response = new CancelReservationResponse();
         response.setBookedTables(BigDecimal.valueOf(reservedTables.size()));
-        response.setRemainingTables(BigDecimal.valueOf(tableRepository.countReservedTables(false)));
+        response.setRemainingTables(BigDecimal.valueOf(availableTables.size()));
         return response;
 
-         */
-        return null;
+
     }
 }
