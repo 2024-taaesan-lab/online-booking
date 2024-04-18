@@ -36,5 +36,5 @@ public interface TableReservationStrategy {
      * @return Response containing cancellation details.
      * @throws BookingIDNotFoundException if the booking ID is not found.
      */
-    CancelReservationResponse cancelReservation(UUID bookingId) throws BookingIDNotFoundException;
+    CancelReservationResponse cancelReservation(String bookingId) throws BookingIDNotFoundException;
 }

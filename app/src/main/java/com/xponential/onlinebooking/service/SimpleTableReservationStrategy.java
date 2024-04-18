@@ -76,7 +76,7 @@ public class SimpleTableReservationStrategy implements TableReservationStrategy 
         reservedTableMap.put(bookingId, reservedTables);
 
         ReserveTableResponse response = new ReserveTableResponse();
-        response.setBookingId(bookingId);
+        response.setBookingId(bookingId.toString());
         response.setBookedTables(BigDecimal.valueOf(reservedTables.size()));
         response.setRemainingTables(BigDecimal.valueOf(availableTables.size()));
         return response;
@@ -89,7 +89,7 @@ public class SimpleTableReservationStrategy implements TableReservationStrategy 
      * @throws BookingIDNotFoundException if the booking ID is not found.
      */
     @Override
-    public CancelReservationResponse cancelReservation(UUID bookingId) throws BookingIDNotFoundException {
+    public CancelReservationResponse cancelReservation(String bookingId) throws BookingIDNotFoundException {
         Deque<UUID> reservedTables = reservedTableMap.remove(bookingId); // Remove reservation details
 
         if (reservedTables == null) {

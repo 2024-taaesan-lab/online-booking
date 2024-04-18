@@ -11,7 +11,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +28,6 @@ public class DatabaseTableReservationStrategy implements TableReservationStrateg
     /** Number of seats per table */
     public static final int SEAT_PER_TABLE = 4;
 
-    @Autowired
     private EntityManager entityManager;
 
     /**
@@ -90,7 +88,7 @@ public class DatabaseTableReservationStrategy implements TableReservationStrateg
         //asyncCallWrapper.reserveTablesAsync(requiredTables, availableTables, reservation);
 
         ReserveTableResponse response = new ReserveTableResponse();
-        response.setBookingId(UUID.fromString(reservation.getBookingId()));
+        response.setBookingId(reservation.getBookingId());
         response.setBookedTables(BigDecimal.valueOf(requiredTables));
         response.setRemainingTables(BigDecimal.valueOf(availableTables.size() - requiredTables));
         return response;
@@ -104,15 +102,15 @@ public class DatabaseTableReservationStrategy implements TableReservationStrateg
      */
     @Override
     @Transactional
-    public CancelReservationResponse cancelReservation(UUID bookingId) throws BookingIDNotFoundException {
+    public CancelReservationResponse cancelReservation(String bookingId) throws BookingIDNotFoundException {
         logger.info("---");
-        logger.info("Finding reservation by bookingId: "+ bookingId.toString());
+        logger.info("Finding reservation by bookingId: "+ bookingId);
         TypedQuery<Reservation> query = entityManager.createQuery("""
                 SELECT l FROM Reservation l
                 JOIN FETCH l.tables
                 WHERE l.bookingId = :id
                 """, Reservation.class);
-        query.setParameter("id", bookingId.toString());
+        query.setParameter("id", bookingId);
         List<Reservation> reservationList = query.getResultList();
 
         if (reservationList == null || reservationList.isEmpty()){

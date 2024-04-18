@@ -151,7 +151,6 @@ components:
       properties:
         bookingId:
           type: string
-          format: uuid
         bookedTables:
           type: number
         remainingTables:
@@ -161,7 +160,6 @@ components:
       properties:
         bookingId:
           type: string
-          format: uuid
       required:
       - bookingId
     CancelReservationResponse:
@@ -169,7 +167,6 @@ components:
       properties:
         bookingId:
           type: string
-          format: uuid
         bookedTables:
           type: number
         remainingTables:

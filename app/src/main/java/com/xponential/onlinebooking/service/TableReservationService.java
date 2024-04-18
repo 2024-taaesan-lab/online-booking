@@ -58,7 +58,7 @@ public class TableReservationService {
      * @throws BookingIDNotFoundException if the booking ID is not found.
      * @throws TablesNotInitializedException if tables are not initialized.
      */
-    public CancelReservationResponse cancelReservation(UUID bookingId) throws BookingIDNotFoundException {
+    public CancelReservationResponse cancelReservation(String bookingId) throws BookingIDNotFoundException {
         checkInitialized(); // Check if tables are initialized
         return reservationStrategy.cancelReservation(bookingId);
     }

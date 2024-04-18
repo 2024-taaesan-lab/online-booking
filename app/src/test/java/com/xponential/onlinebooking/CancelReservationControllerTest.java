@@ -37,11 +37,11 @@ public class CancelReservationControllerTest {
         // Mocking behavior of TableReservationService
         CancelReservationDTO request = new CancelReservationDTO();
         UUID bookingId = UUID.randomUUID(); // Example bookingId
-        request.setBookingId(bookingId);
+        request.setBookingId(bookingId.toString());
         CancelReservationResponse expectedResponse = new CancelReservationResponse();
         // Assuming expected response setup here
 
-        when(tableReservationService.cancelReservation(any(UUID.class))).thenReturn(expectedResponse);
+        when(tableReservationService.cancelReservation(any(String.class))).thenReturn(expectedResponse);
 
         // Invoking controller method
         ResponseEntity<CancelReservationResponse> responseEntity = cancelReservationController.cancelReservation(request);
