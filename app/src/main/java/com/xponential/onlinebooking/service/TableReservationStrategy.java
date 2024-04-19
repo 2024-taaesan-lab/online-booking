@@ -15,6 +15,8 @@ import java.util.UUID;
  */
 public interface TableReservationStrategy {
 
+    boolean isTableInitialized();
+
     /**
      * Initializes tables based on the specified number.
      * @param numberOfTables The number of tables to initialize.

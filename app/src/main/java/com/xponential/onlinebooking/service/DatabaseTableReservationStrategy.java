@@ -7,10 +7,12 @@ import com.xponential.onlinebooking.model.NotEnoughTablesForAllCustomersExceptio
 import com.xponential.onlinebooking.model.Reservation;
 import com.xponential.onlinebooking.model.ReserveTableResponse;
 import com.xponential.onlinebooking.model.TableModel;
+import com.xponential.onlinebooking.model.TablesAlreadyInitializedException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +30,15 @@ public class DatabaseTableReservationStrategy implements TableReservationStrateg
     /** Number of seats per table */
     public static final int SEAT_PER_TABLE = 4;
 
+    @Autowired
     private EntityManager entityManager;
+
+    @Override
+    public boolean isTableInitialized() {
+        TypedQuery<Long> query = entityManager.createQuery("SELECT COUNT(t) FROM TableModel t", Long.class);
+        long tables = (long) query.getSingleResult();
+        return tables > 0;
+    }
 
     /**
      * Initializes the specified number of tables.
@@ -37,7 +47,7 @@ public class DatabaseTableReservationStrategy implements TableReservationStrateg
      */
     @Override
     @Transactional
-    public InitializeTablesResponse initializeTables(int numberOfTables) {
+    public InitializeTablesResponse initializeTables(int numberOfTables) throws  TablesAlreadyInitializedException {
 
         logger.info("entityManager: "+entityManager);
 

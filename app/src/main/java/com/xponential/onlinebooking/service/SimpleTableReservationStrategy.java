@@ -36,6 +36,11 @@ public class SimpleTableReservationStrategy implements TableReservationStrategy 
         this.reservedTableMap = new HashMap<>();
     }
 
+    @Override
+    public boolean isTableInitialized() {
+        return false;
+    }
+
     /**
      * Initializes the specified number of tables.
      * @param numberOfTables The number of tables to initialize.

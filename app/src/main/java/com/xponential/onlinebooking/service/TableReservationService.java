@@ -30,6 +30,7 @@ public class TableReservationService {
      * @throws TablesAlreadyInitializedException if tables are already initialized.
      */
     public InitializeTablesResponse initializeTables(int numberOfTables) {
+        initialized = reservationStrategy.isTableInitialized();
         if (!initialized) {
             InitializeTablesResponse response = reservationStrategy.initializeTables(numberOfTables);
             initialized = true;

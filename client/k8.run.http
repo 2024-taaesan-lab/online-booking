@@ -1,9 +1,13 @@
 ###
+GET http://192.168.49.2/api/v1/info
+Content-Type: application/json
+
+###
 POST http://192.168.49.2/api/v1/initializeTables
 Content-Type: application/json
 
 {
-  "numberOfTables": 10
+  "numberOfTables": 500
 }
 
 
@@ -12,7 +16,7 @@ POST http://192.168.49.2/api/v1/reserveTable
 Content-Type: application/json
 
 {
-  "numberOfCustomers": 2
+  "numberOfCustomers": 16
 }
 
 
