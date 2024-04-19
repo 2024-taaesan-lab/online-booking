@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+spec:
+  selector:
+    matchLabels:
+      app: mysql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - image: mysql:8.3.0
+        name: mysql
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: password
+        ports:
+        - containerPort: 3306
+          name: mysql
+        volumeMounts:
+        - name: mysql-initdb
+          mountPath: /docker-entrypoint-initdb.d
+        - name: mysql-persistent-storage
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: mysql-initdb
+        configMap:
+          name: mysql-initdb-config
+      - name: mysql-persistent-storage
+        persistentVolumeClaim:
+          claimName: mysql-pv-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+spec:
+  ports:
+  - port: 3306
+  selector:
+    app: mysql
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-initdb-config
+data:
+  init.sql: |
+    CREATE DATABASE IF NOT EXISTS demo;
+    USE demo;
+
+    CREATE TABLE reservation (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      booking_id VARCHAR(128) UNIQUE,
+      first_name VARCHAR(45),
+      last_name VARCHAR(45),
+      email VARCHAR(45),
+      phone_number VARCHAR(45),
+      table_id INT
+    );
+
+    CREATE TABLE table_model (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      title VARCHAR(128) UNIQUE,
+      reservation_id INT
+    );
+
+    ALTER TABLE reservation
+      ADD CONSTRAINT fk_table_id FOREIGN KEY (table_id) REFERENCES table_model (id) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+    ALTER TABLE table_model
+      ADD CONSTRAINT fk_reservation_id FOREIGN KEY (reservation_id) REFERENCES reservation (id) ON DELETE NO ACTION ON UPDATE NO ACTION;
+

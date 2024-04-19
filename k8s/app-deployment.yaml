@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tbs-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: table-booking-service-k8
+  template:
+    metadata:
+      labels:
+        component: table-booking-service-k8
+    spec:
+      containers:
+        - name: table-booking-service-k8
+          image: taaesan/table-booking-service-k8:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: table-booking-service-k8-service
+spec:
+  type: ClusterIP
+  selector:
+    component: table-booking-service-k8
+  ports:
+    - port: 8080
+      targetPort: 8080
