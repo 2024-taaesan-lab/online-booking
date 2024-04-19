@@ -25,7 +25,7 @@ Setting up Kubernetes is the most complex process, but it provides the ability t
 
 - **resources**: This directory contains miscellaneous resources related to the project. It may include documentation, design assets, or any other project-related materials.
 
-- **table-booking-service**: This directory contains the backend service code for the online booking application. The backend service is written in Java with the Spring Boot framework. It includes server-side code, configuration files, tests, and other related resources specific to the table booking service.
+- **app**: This directory contains the backend service code for the online booking application. The backend service is written in Java with the Spring Boot framework. It includes server-side code, configuration files, tests, and other related resources specific to the table booking service.
 
 ## Docker Instructions
 
@@ -47,9 +47,9 @@ Java 17:[ Download JDK 17](https://www.oracle.com/java/technologies/javase/jdk17
 Maven 3.9+: [Download Maven](https://maven.apache.org/download.cgi)
 
 ### Usage
-1. Navigate to the 'table-booking-service' directory:
+1. Navigate to the 'app' directory:
 ```Shell
-cd table-booking-service
+cd app
 ```  
 
 2. Install the project dependencies and execute unit tests using the following command:  
@@ -99,16 +99,10 @@ minikube addons list
 2. Execute the following commands to set up the Postgres cluster:
 
 ```Shell
-kubectl apply -f k8s/postgres-configmap.yaml
-kubectl apply -f k8s/postgres-volumn.yaml
-kubectl apply -f k8s/postgres-deployment.yaml
+kubectl apply -f k8s/
+
 ```
 
-3. Deploy the application by executing the following commands:
-```Shell
-kubectl apply -f k8s/table-booking-service.yaml
-kubectl apply -f k8s/ingress.yaml
-```
 
 ## Asynchronous Call Performance Optimization
 
@@ -118,15 +112,15 @@ Let's compare the duration for the /initializeTables endpoint:
 
 Before: it took 1232 milliseconds.
 ```Shell
-2024-04-09T23:20:45.377Z  INFO 1 --- [online-booking] [nio-8080-exec-1] c.x.o.c.InitializeTablesController       : The current Thread is : http-nio-8080-exec-1
-2024-04-09T23:20:45.378Z  INFO 1 --- [online-booking] [nio-8080-exec-1] c.x.o.c.InitializeTablesController       : Elapsed time: 1232
+c.x.o.c.InitializeTablesController       : The current Thread is : http-nio-8080-exec-1
+c.x.o.c.InitializeTablesController       : Elapsed time: 1232
 
 ```
 
 After: it took only 5 milliseconds.
 ```Shell
-2024-04-09T23:38:00.859Z  INFO 1 --- [online-booking] [nio-8080-exec-1] c.x.o.c.InitializeTablesController       : The current Thread is : http-nio-8080-exec-1
-2024-04-09T23:38:00.859Z  INFO 1 --- [online-booking] [nio-8080-exec-1] c.x.o.c.InitializeTablesController       : Elapsed time: 5
+c.x.o.c.InitializeTablesController       : The current Thread is : http-nio-8080-exec-1
+c.x.o.c.InitializeTablesController       : Elapsed time: 5
 ```
 
 Here's the difference:
@@ -135,6 +129,18 @@ That's a staggering **99.6% improvement!** This significant boost in performance
 
 
 ## Miscellaneous
+
+
+### Mysql on K8
+
+```Shell
+k exec -it mysql-7566d4947d-8bbls -- /bin/bash   
+mysql -u root -ptest1234 demo
+use demo;
+select * from table_models;
+select * from reservation;
+
+```
 
 ### Prostgres on K8
 https://www.digitalocean.com/community/tutorials/how-to-deploy-postgres-to-kubernetes-cluster
