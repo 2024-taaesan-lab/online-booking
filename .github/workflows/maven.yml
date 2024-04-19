@@ -32,6 +32,6 @@ jobs:
 
     - name: Build with Maven
       run: |
-        cd table-booking-service
+        cd app
         mvn -B package
         echo $VERSION
