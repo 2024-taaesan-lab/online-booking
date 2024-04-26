@@ -43,7 +43,7 @@ public class InitializeTablesController implements InitializeTablesApi {
         long start = System.currentTimeMillis();
         ResponseEntity<InitializeTablesResponse> resp = ResponseEntity.ok(tableReservationService.initializeTables(initializeTablesDTO.getNumberOfTables().intValue()));
         logger.info("The current Thread is : "+Thread.currentThread().getName());
-        logger.info("Elapsed time: " + (System.currentTimeMillis() - start));
+        logger.info("Elapsed time: %s ms", (System.currentTimeMillis() - start));
         return resp;
     }
 
