@@ -1,4 +1,4 @@
-package com.xponential.onlinebooking.model;
+package com.demo.onlinebooking.model;
 
 public class InfoResponse {
     public InfoResponse(){}

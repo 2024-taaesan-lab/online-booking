@@ -1,4 +1,4 @@
-package com.xponential.onlinebooking.model;
+package com.demo.onlinebooking.model;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

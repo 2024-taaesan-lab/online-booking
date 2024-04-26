@@ -1,4 +1,4 @@
-package com.xponential.onlinebooking.model;
+package com.demo.onlinebooking.model;
 
 /**
  * Custom exception class for handling cases where there are not enough tables for all customers.

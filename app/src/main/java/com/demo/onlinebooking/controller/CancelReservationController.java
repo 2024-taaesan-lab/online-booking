@@ -1,8 +1,8 @@
-package com.xponential.onlinebooking.controller;
+package com.demo.onlinebooking.controller;
 
-import com.xponential.onlinebooking.model.CancelReservationDTO;
-import com.xponential.onlinebooking.model.CancelReservationResponse;
-import com.xponential.onlinebooking.service.TableReservationService;
+import com.demo.onlinebooking.model.CancelReservationDTO;
+import com.demo.onlinebooking.model.CancelReservationResponse;
+import com.demo.onlinebooking.service.TableReservationService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

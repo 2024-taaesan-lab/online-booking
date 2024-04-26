@@ -1,10 +1,10 @@
-package com.xponential.onlinebooking.service;
+package com.demo.onlinebooking.service;
 
-import com.xponential.onlinebooking.model.BookingIDNotFoundException;
-import com.xponential.onlinebooking.model.CancelReservationResponse;
-import com.xponential.onlinebooking.model.InitializeTablesResponse;
-import com.xponential.onlinebooking.model.NotEnoughTablesForAllCustomersException;
-import com.xponential.onlinebooking.model.ReserveTableResponse;
+import com.demo.onlinebooking.model.BookingIDNotFoundException;
+import com.demo.onlinebooking.model.NotEnoughTablesForAllCustomersException;
+import com.demo.onlinebooking.model.CancelReservationResponse;
+import com.demo.onlinebooking.model.InitializeTablesResponse;
+import com.demo.onlinebooking.model.ReserveTableResponse;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;

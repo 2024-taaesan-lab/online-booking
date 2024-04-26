@@ -1,10 +1,14 @@
-package com.xponential.onlinebooking.service;
+package com.demo.onlinebooking.service;
 
-import com.xponential.onlinebooking.model.*;
+import com.demo.onlinebooking.model.BookingIDNotFoundException;
+import com.demo.onlinebooking.model.CancelReservationResponse;
+import com.demo.onlinebooking.model.InitializeTablesResponse;
+import com.demo.onlinebooking.model.NotEnoughTablesForAllCustomersException;
+import com.demo.onlinebooking.model.ReserveTableResponse;
+import com.demo.onlinebooking.model.TablesAlreadyInitializedException;
+import com.demo.onlinebooking.model.TablesNotInitializedException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-
-import java.util.UUID;
 
 /**
  * Service class for managing table reservations.

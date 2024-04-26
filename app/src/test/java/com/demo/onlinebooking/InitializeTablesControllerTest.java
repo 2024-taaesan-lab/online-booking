@@ -1,11 +1,11 @@
-package com.xponential.onlinebooking;
+package com.demo.onlinebooking;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.xponential.onlinebooking.controller.InitializeTablesController;
-import com.xponential.onlinebooking.model.InitializeTablesDTO;
-import com.xponential.onlinebooking.model.InitializeTablesResponse;
-import com.xponential.onlinebooking.service.TableReservationService;
+import com.demo.onlinebooking.controller.InitializeTablesController;
+import com.demo.onlinebooking.model.InitializeTablesDTO;
+import com.demo.onlinebooking.model.InitializeTablesResponse;
+import com.demo.onlinebooking.service.TableReservationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

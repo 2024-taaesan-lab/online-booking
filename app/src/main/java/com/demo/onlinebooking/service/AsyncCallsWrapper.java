@@ -1,7 +1,7 @@
-package com.xponential.onlinebooking.service;
+package com.demo.onlinebooking.service;
 
-import com.xponential.onlinebooking.model.Reservation;
-import com.xponential.onlinebooking.model.TableModel;
+import com.demo.onlinebooking.model.Reservation;
+import com.demo.onlinebooking.model.TableModel;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

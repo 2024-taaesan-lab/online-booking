@@ -8,7 +8,7 @@
 		<version>3.2.4</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.xponential</groupId>
+	<groupId>com.demo</groupId>
 	<artifactId>online-booking</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>online-booking</name>
@@ -84,8 +84,8 @@
 								<openApiNullable>false</openApiNullable>
 								<interfaceOnly>true</interfaceOnly>
 								<useSpringBoot3>true</useSpringBoot3>
-								<modelPackage>com.xponential.onlinebooking.model</modelPackage>
-								<apiPackage>com.xponential.onlinebooking.controller</apiPackage>
+								<modelPackage>com.demo.onlinebooking.model</modelPackage>
+								<apiPackage>com.demo.onlinebooking.controller</apiPackage>
 							</configOptions>
 						</configuration>
 					</execution>

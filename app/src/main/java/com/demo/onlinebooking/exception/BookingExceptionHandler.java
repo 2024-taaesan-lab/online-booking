@@ -1,17 +1,14 @@
-package com.xponential.onlinebooking.exception;
+package com.demo.onlinebooking.exception;
 
-import com.xponential.onlinebooking.model.BookingIDNotFoundException;
-import com.xponential.onlinebooking.model.NotEnoughTablesForAllCustomersException;
-import com.xponential.onlinebooking.model.TablesAlreadyInitializedException;
-import com.xponential.onlinebooking.model.ErrorResponse;
-import com.xponential.onlinebooking.model.TablesNotInitializedException;
-import jakarta.validation.ConstraintViolationException;
+import com.demo.onlinebooking.model.NotEnoughTablesForAllCustomersException;
+import com.demo.onlinebooking.model.TablesAlreadyInitializedException;
+import com.demo.onlinebooking.model.TablesNotInitializedException;
+import com.demo.onlinebooking.model.BookingIDNotFoundException;
+import com.demo.onlinebooking.model.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-
-import java.time.LocalDateTime;
 
 /**
  * Global exception handler for booking-related exceptions.

@@ -1,9 +1,9 @@
-package com.xponential.onlinebooking;
+package com.demo.onlinebooking;
 
-import com.xponential.onlinebooking.controller.ReserveTableController;
-import com.xponential.onlinebooking.model.ReserveTableDTO;
-import com.xponential.onlinebooking.model.ReserveTableResponse;
-import com.xponential.onlinebooking.service.TableReservationService;
+import com.demo.onlinebooking.controller.ReserveTableController;
+import com.demo.onlinebooking.model.ReserveTableDTO;
+import com.demo.onlinebooking.service.TableReservationService;
+import com.demo.onlinebooking.model.ReserveTableResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
