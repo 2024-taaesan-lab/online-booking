@@ -25,7 +25,7 @@ new_version=$(increment_patch "$current_version")
 echo "$new_version" > version.txt
 
 # Execute the commands with the updated version
-mvn package -Dmaven.test.skip=true && \
+mvn package -Dmaven.test.skip=true -Dspring.profile.active=docker && \
 docker buildx build -t taaesan/table-booking-service-k8:$new_version -t taaesan/table-booking-service-k8:latest . && \
 docker push taaesan/table-booking-service-k8:$new_version && \
 docker push taaesan/table-booking-service-k8:latest

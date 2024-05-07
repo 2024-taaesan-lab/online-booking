@@ -5,6 +5,7 @@ import com.demo.onlinebooking.model.NotEnoughTablesForAllCustomersException;
 import com.demo.onlinebooking.model.CancelReservationResponse;
 import com.demo.onlinebooking.model.InitializeTablesResponse;
 import com.demo.onlinebooking.model.ReserveTableResponse;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -18,6 +19,7 @@ import java.util.UUID;
  * Service component for simple table reservation strategy.
  */
 @Component(value = "simpleTableReservationStrategy")
+@Profile("dev")
 public class SimpleTableReservationStrategy implements TableReservationStrategy {
 
     /** Number of seats per table */

@@ -13,6 +13,7 @@ import jakarta.persistence.TypedQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,14 +25,19 @@ import java.util.UUID;
  * Service implementation for handling table reservations using a database-backed strategy.
  */
 @Component(value = "jpaTableReservationStrategy")
+@Profile("!dev")
 public class DatabaseTableReservationStrategy implements TableReservationStrategy {
     private static final Logger logger = LoggerFactory.getLogger(DatabaseTableReservationStrategy.class);
 
     /** Number of seats per table */
     public static final int SEAT_PER_TABLE = 4;
 
-    @Autowired
     private EntityManager entityManager;
+
+    @Autowired
+    public DatabaseTableReservationStrategy(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
 
     @Override
     public boolean isTableInitialized() {

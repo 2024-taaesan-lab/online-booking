@@ -1,0 +1,1 @@
+mvn package -Dmaven.test.skip=true -Dspring.profile.active=docker

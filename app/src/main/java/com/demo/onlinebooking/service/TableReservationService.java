@@ -23,7 +23,7 @@ public class TableReservationService {
      * Constructs a TableReservationService instance with the specified reservation strategy.
      * @param reservationStrategy The reservation strategy to be used.
      */
-    public TableReservationService(@Qualifier("jpaTableReservationStrategy") TableReservationStrategy reservationStrategy) {
+    public TableReservationService(TableReservationStrategy reservationStrategy) {
         this.reservationStrategy = reservationStrategy;
     }
 

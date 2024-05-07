@@ -1,0 +1,38 @@
+networks:
+  app-tier:
+    driver: bridge
+
+services:
+  mysql:
+    image: 'bitnami/mysql:8.0'
+    environment:
+      - MYSQL_ROOT_PASSWORD=1234
+      - MYSQL_DATABASE=demo
+      - MYSQL_USER=test
+      - MYSQL_PASSWORD=1234
+    ports:
+      - "3306:3306"
+    networks:
+      - app-tier
+    restart: always
+    volumes:
+      - /home/taaesan/dev/mysql:/var/lib/mysql
+      - ./sql-scripts:/docker-entrypoint-initdb.d
+  myadmin:
+    image: phpmyadmin
+    restart: always
+    ports:
+      - 8181:80
+    environment:
+      - PMA_ARBITRARY=1
+    networks:
+      - app-tier
+  app:
+    build:
+      dockerfile: Dockerfile
+      context: ./app
+    container_name: online-booking-service
+    ports:
+      - 8080:8080
+    networks:
+      - app-tier

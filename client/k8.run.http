@@ -7,7 +7,7 @@ POST http://192.168.49.2/api/v1/initializeTables
 Content-Type: application/json
 
 {
-  "numberOfTables": 500
+  "numberOfTables": 100
 }
 
 
